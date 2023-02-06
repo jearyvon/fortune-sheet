@@ -12,6 +12,7 @@ import {
   handleLink,
   hideSelected,
   showSelected,
+  handleMerge,
 } from "@fortune-sheet/core";
 import _ from "lodash";
 import React, { useContext, useRef, useLayoutEffect, useCallback } from "react";
@@ -52,6 +53,25 @@ const ContextMenu: React.FC = () => {
             }}
           >
             {rightclick.copy}
+          </Menu>
+        );
+      }
+      if (name === "merge-cell") {
+        return (
+          <Menu
+            key={name}
+            onClick={() => {
+              setContext((draftCtx) => {
+                if (draftCtx.luckysheet_select_save?.length! === 1) {
+                  handleMerge(draftCtx, "merge-all");
+                  draftCtx.contextMenu = undefined;
+                  return;
+                }
+                draftCtx.contextMenu = undefined;
+              });
+            }}
+          >
+            {rightclick.mergeCell}
           </Menu>
         );
       }

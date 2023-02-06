@@ -212,6 +212,7 @@ export const defaultSettings: Required<Settings> = {
     "copy", // 复制
     "paste", // 粘贴
     "|",
+    "merge-cell",
     "insert-row", // 插入行
     "insert-column", // 插入列
     "delete-row", // 删除选中行
@@ -235,6 +236,7 @@ export const defaultSettings: Required<Settings> = {
     "copy", // 复制
     "paste", // 粘贴
     "|",
+    "merge-cell",
     "insert-row", // 插入行
     "insert-column", // 插入列
     "delete-row", // 删除选中行

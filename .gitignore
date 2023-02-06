@@ -138,3 +138,6 @@ dist
 
 # storybook
 /storybook-static
+
+# storybook
+.DS_Store

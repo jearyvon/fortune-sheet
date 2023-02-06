@@ -11443,6 +11443,7 @@ export default {
     image: "Insert image",
     link: "Insert link",
     delete: "Delete",
+    mergeCell: "Merge cells",
     deleteCell: "Delete cell",
     deleteSelected: "Delete selected ",
     hide: "Hide",

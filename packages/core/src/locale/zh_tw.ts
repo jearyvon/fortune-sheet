@@ -11448,6 +11448,7 @@ export default {
     image: "插入圖片",
     link: "插入連結",
     delete: "删除",
+    mergeCell: "合併儲存格",
     deleteCell: "删除儲存格",
     deleteSelected: "删除選中",
     hide: "隱藏",

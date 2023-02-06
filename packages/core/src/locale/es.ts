@@ -11418,6 +11418,7 @@ export default {
     image: "Insertar imágenes",
     link: "Insertar enlace",
     delete: "Eliminar",
+    mergeCell: "Juntar celdas",
     deleteCell: "Eliminar celda",
     deleteSelected: "Eliminar seleccionado ",
     hide: "Esconder",
