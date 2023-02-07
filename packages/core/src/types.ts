@@ -223,6 +223,7 @@ export type Freezen = {
 
 export type GlobalCache = {
   overwriteCell?: boolean;
+  ignoreWriteCell?: boolean;
   doNotFocus?: boolean;
   doNotUpdateCell?: boolean;
   recentTextColor?: string;

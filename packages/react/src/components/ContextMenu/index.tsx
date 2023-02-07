@@ -13,6 +13,7 @@ import {
   hideSelected,
   showSelected,
   handleMerge,
+  getSheetIndex,
 } from "@fortune-sheet/core";
 import _ from "lodash";
 import React, { useContext, useRef, useLayoutEffect, useCallback } from "react";
@@ -245,6 +246,18 @@ const ContextMenu: React.FC = () => {
                     draftCtx.contextMenu = undefined;
                     return;
                   }
+                  const slen = ed_index - st_index + 1;
+                  const index = getSheetIndex(
+                    draftCtx,
+                    context.currentSheetId
+                  ) as number;
+                  if (
+                    draftCtx.luckysheetfile[index].data?.[0]?.length! <= slen
+                  ) {
+                    showAlert(rightclick.cannotDeleteAllColumn, "ok");
+                    draftCtx.contextMenu = undefined;
+                    return;
+                  }
                   deleteRowCol(draftCtx, deleteRowColOp);
                   draftCtx.contextMenu = undefined;
                 },
@@ -274,6 +287,16 @@ const ContextMenu: React.FC = () => {
                 (draftCtx) => {
                   if (draftCtx.luckysheet_select_save?.length! > 1) {
                     showAlert(rightclick.noMulti, "ok");
+                    draftCtx.contextMenu = undefined;
+                    return;
+                  }
+                  const slen = ed_index - st_index + 1;
+                  const index = getSheetIndex(
+                    draftCtx,
+                    context.currentSheetId
+                  ) as number;
+                  if (draftCtx.luckysheetfile[index].data?.length! <= slen) {
+                    showAlert(rightclick.cannotDeleteAllRow, "ok");
                     draftCtx.contextMenu = undefined;
                     return;
                   }
