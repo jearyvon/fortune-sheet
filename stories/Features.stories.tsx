@@ -36,7 +36,16 @@ export const Formula = Template.bind({});
 Formula.args = { data: [formula] };
 
 export const Empty = Template.bind({});
-Empty.args = { data: [empty] };
+Empty.args = {
+  data: [empty], hooks: {
+    onCellWithRadioClick: (tempCell, row, col) => {
+      if (tempCell && tempCell.radio) {
+        tempCell.radio = "1" 
+      }
+      return tempCell;
+    }
+  }
+};
 
 export const Tabs = Template.bind({});
 // @ts-ignore

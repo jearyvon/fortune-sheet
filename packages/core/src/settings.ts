@@ -119,6 +119,7 @@ export type Hooks = {
     newName: string
   ) => boolean;
   afterUpdateSheetName?: (id: string, oldName: string, newName: string) => void;
+  onCellWithRadioClick?: (cell: Cell | null, row: number, col: number) => Cell | null
 };
 
 export type Settings = {

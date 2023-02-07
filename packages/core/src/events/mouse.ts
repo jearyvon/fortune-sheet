@@ -223,6 +223,8 @@ export function handleCellAreaMouseDown(
   const mouseY = e.pageY - rect.top;
   let x = mouseX + ctx.scrollLeft;
   let y = mouseY + ctx.scrollTop;
+
+  console.log(mouseX, mouseY);
   if (x >= rect.width + ctx.scrollLeft || y >= rect.height + ctx.scrollTop) {
     return;
   }
@@ -246,7 +248,6 @@ export function handleCellAreaMouseDown(
     [row_pre, row, row_index, row_index_ed] = margeset.row;
     [col_pre, col, col_index, col_index_ed] = margeset.column;
   }
-
   showLinkCard(ctx, row_index, col_index, false, true);
   // //单元格单击之前
   if (
@@ -261,7 +262,22 @@ export function handleCellAreaMouseDown(
   ) {
     return;
   }
-
+  if (ctx.luckysheet_select_save && ctx.luckysheet_select_save.length == 1) {
+    const cellWidthHalf = (col - col_pre) / 2;
+    const cellHeight = (row - row_pre);
+    const pointInCell = {
+      x: mouseX - col_pre,
+      y: mouseY - row_pre,
+    }
+    if ((pointInCell.x > 0 && pointInCell.x < cellWidthHalf) && pointInCell.y > 0 && pointInCell.y < cellHeight) {
+      if (flowdata[row_index]?.[col_index] && flowdata[row_index]?.[col_index]?.radio) {
+        if (flowdata[row_index][col_index] !== null) {
+          const tempCell = JSON.parse(JSON.stringify(flowdata[row_index][col_index]));
+          const cellData = ctx.hooks.onCellWithRadioClick?.(flowdata[row_index][col_index], row_index, col_index);
+        }
+      }
+    }
+  }
   // //数据验证 单元格聚焦
   // dataVerificationCtrl.cellFocus(row_index, col_index, true);
 
@@ -5158,9 +5174,8 @@ export function handleColSizeHandleMouseDown(
   );
   if (changeSizeLine) {
     const ele = changeSizeLine as HTMLDivElement;
-    ele.style.height = `${
-      cellArea.getBoundingClientRect().height + scrollTop
-    }px`;
+    ele.style.height = `${cellArea.getBoundingClientRect().height + scrollTop
+      }px`;
     ele.style.borderWidth = "0 1px 0 0";
     ele.style.top = "0";
     ele.style.left = `${col - 3}px`;
@@ -5216,9 +5231,8 @@ export function handleRowSizeHandleMouseDown(
   );
   if (changeSizeLine) {
     const ele = changeSizeLine as HTMLDivElement;
-    ele.style.width = `${
-      cellArea.getBoundingClientRect().width + scrollLeft
-    }px`;
+    ele.style.width = `${cellArea.getBoundingClientRect().width + scrollLeft
+      }px`;
     ele.style.borderWidth = "0 0 1px 0";
     ele.style.top = `${row - 3}px`;
     ele.style.left = "0";

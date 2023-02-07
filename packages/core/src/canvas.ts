@@ -1329,7 +1329,7 @@ export class Canvas {
             if (mergeCell) {
               const mergeCellOffset =
                 borderOffset[
-                  `${bdRow + mergeCell.rs - 1}_${bdCol + mergeCell.cs - 1}`
+                `${bdRow + mergeCell.rs - 1}_${bdCol + mergeCell.cs - 1}`
                 ];
               mergeCellEndX = mergeCellOffset.endX;
               mergeCellEndY = mergeCellOffset.endY;
@@ -2184,19 +2184,19 @@ export class Canvas {
 
       const textInfo = cell
         ? getCellTextInfo(
-            cell,
-            renderCtx,
-            this.sheetCtx,
-            {
-              cellWidth,
-              cellHeight,
-              space_width,
-              space_height,
-              r,
-              c,
-            },
-            this.sheetCtx
-          )
+          cell,
+          renderCtx,
+          this.sheetCtx,
+          {
+            cellWidth,
+            cellHeight,
+            space_width,
+            space_height,
+            r,
+            c,
+          },
+          this.sheetCtx
+        )
         : undefined;
 
       // 若单元格有条件格式图标集
@@ -2233,7 +2233,6 @@ export class Canvas {
           textInfo.textHeightAll / this.sheetCtx.zoomRatio
         );
       }
-
       // 单元格 文本颜色
       renderCtx.fillStyle = normalizedAttr(flowdata, r, c, "fc");
 
@@ -2258,6 +2257,7 @@ export class Canvas {
       this.cellTextRender(textInfo, renderCtx, {
         pos_x,
         pos_y,
+        radio: cell?.radio
       });
 
       renderCtx.restore();
@@ -2375,19 +2375,19 @@ export class Canvas {
 
     const textInfo = cell
       ? getCellTextInfo(
-          cell,
-          renderCtx,
-          this.sheetCtx,
-          {
-            cellWidth,
-            cellHeight,
-            space_width,
-            space_height,
-            r,
-            c,
-          },
-          this.sheetCtx
-        )
+        cell,
+        renderCtx,
+        this.sheetCtx,
+        {
+          cellWidth,
+          cellHeight,
+          space_width,
+          space_height,
+          r,
+          c,
+        },
+        this.sheetCtx
+      )
       : undefined;
 
     // 交替颜色
@@ -2408,7 +2408,6 @@ export class Canvas {
     if (checksCF?.textColor) {
       renderCtx.fillStyle = checksCF.textColor;
     }
-
     this.cellTextRender(textInfo, renderCtx, {
       pos_x,
       pos_y,
@@ -2575,14 +2574,30 @@ export class Canvas {
       edc,
     };
   }
-
+  cellRadioRender(checked: boolean, renderCtx: CanvasRenderingContext2D, pos_x: number, pos_y: number) {
+    renderCtx.beginPath();
+    renderCtx.arc(pos_x + 8, pos_y + 8, 6, 0, 2 * Math.PI);
+    renderCtx.strokeStyle = "#767676";
+    renderCtx.stroke();
+    renderCtx.closePath();
+    renderCtx.beginPath();
+    renderCtx.arc(pos_x + 8, pos_y + 8, 4, 0, 2 * Math.PI);
+    if (checked) {
+      renderCtx.fillStyle = "#767676";
+      renderCtx.fill();
+    } else {
+      renderCtx.strokeStyle = "#767676";
+      renderCtx.stroke();
+    }
+    renderCtx.closePath();
+  }
   cellTextRender(textInfo: any, ctx: CanvasRenderingContext2D, option: any) {
     if (!textInfo) {
       return;
     }
     const { values } = textInfo;
     const { pos_x } = option;
-    const { pos_y } = option;
+    const { pos_y, radio = null } = option;
     if (!values) {
       return;
     }
@@ -2610,8 +2625,19 @@ export class Canvas {
       );
     }
 
+    let radioPos = {
+      x: 0,
+      y: 0
+    }
     for (let i = 0; i < values.length; i += 1) {
       const word = values[i];
+      let paddingLeft20 = false;
+      if (i === 0 && radio && values.length === 1) {
+        radioPos.x = (pos_x + word.left) / this.sheetCtx.zoomRatio;
+        radioPos.y = (pos_y + word.top - word.height) / this.sheetCtx.zoomRatio;
+        this.cellRadioRender(Boolean(Number(radio)), ctx, radioPos.x, radioPos.y);
+        paddingLeft20 = true;
+      }
       if (word.inline === true && word.style) {
         ctx.font = word.style.fontset;
         ctx.fillStyle = word.style.fc;
@@ -2619,6 +2645,9 @@ export class Canvas {
         ctx.font = word.style;
       }
 
+      if (paddingLeft20) {
+        word.left += 20;
+      }
       // 暂时未排查到word.content第一次会是object，先做下判断来渲染，后续找到问题再复原
       const txt = _.isPlainObject(word.content) ? word.content.m : word.content;
       ctx.fillText(
@@ -2664,6 +2693,8 @@ export class Canvas {
         }
       }
     }
+
+
     if (textInfo.rotate !== 0 && textInfo.type !== "verticalWrap") {
       ctx.restore();
     }
