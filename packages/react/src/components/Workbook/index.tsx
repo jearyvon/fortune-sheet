@@ -130,6 +130,9 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     );
 
     function reduceUndoList(ctx: Context, ctxBefore: Context) {
+
+
+      console.log('reduceUndoList');
       const sheetsId = ctx.luckysheetfile.map((sheet) => sheet.id);
       const sheetDeletedByMe = globalCache.current.undoList
         .filter((undo) => undo.options?.deleteSheetOp)
@@ -262,6 +265,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     );
 
     const handleUndo = useCallback(() => {
+      console.log('handleUndo,',globalCache.current.undoList)
       const history = globalCache.current.undoList.pop();
       if (history) {
         setContext((ctx_) => {

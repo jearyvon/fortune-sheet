@@ -35,6 +35,13 @@ const ContextMenu: React.FC = () => {
   const getMenuElement = useCallback(
     (name: string, i: number) => {
       const selection = context.luckysheet_select_save?.[0];
+      let disableMerge = false;
+      if (selection?.column[0] === selection?.column[1] && selection?.row[0] === selection?.row[1]) {
+        disableMerge = true;
+      }
+      if (context.luckysheet_select_save && context.luckysheet_select_save?.length > 1) {
+        disableMerge = true;
+      }
       if (name === "|") {
         return <Divider key={`divider-${i}`} />;
       }
@@ -62,6 +69,7 @@ const ContextMenu: React.FC = () => {
         return (
           <Menu
             key={name}
+            disable={disableMerge}
             onClick={() => {
               setContext((draftCtx) => {
                 if (draftCtx.luckysheet_select_save?.length! === 1) {

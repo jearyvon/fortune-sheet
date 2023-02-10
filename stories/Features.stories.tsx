@@ -37,14 +37,14 @@ Formula.args = { data: [formula] };
 
 export const Empty = Template.bind({});
 Empty.args = {
-  data: [empty], hooks: {
-    onCellWithRadioClick: (tempCell, row, col) => {
-      if (tempCell && tempCell.radio) {
-        tempCell.radio = "1" 
-      }
-      return tempCell;
-    }
-  }
+  data: [empty],
+  column: 9,
+  row: 9,
+  rowHeaderWidth: 90,
+  columnHeaderHeight: 40,
+  defaultFontSize: 12,
+  defaultColWidth: 90,
+  defaultRowHeight: 40,
 };
 
 export const Tabs = Template.bind({});

@@ -173,7 +173,7 @@ const ColumnHeader: React.FC = () => {
             display: "block",
           }}
         >
-          <span
+          {/* <span
             className="header-arrow"
             onClick={(e) => {
               setContext((ctx) => {
@@ -186,7 +186,7 @@ const ColumnHeader: React.FC = () => {
             }}
           >
             <SVGIcon name="headDownArrow" width={12} />
-          </span>
+          </span> */}
         </div>
       ) : null}
       {selectedLocation.map(({ col, col_pre }, i) => (

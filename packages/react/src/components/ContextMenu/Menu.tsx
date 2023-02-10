@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 
 type Props = React.PropsWithChildren<{
+  disable?:boolean,
   onClick?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     container: HTMLDivElement
@@ -20,12 +21,13 @@ const Menu: React.FC<Props> = ({
   onMouseLeave,
   onMouseEnter,
   children,
+  disable=false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   return (
     <div
       ref={containerRef}
-      className="luckysheet-cols-menuitem luckysheet-mousedown-cancel"
+      className={`luckysheet-cols-menuitem luckysheet-mousedown-cancel ${disable?"luckysheet-cols-menuitem-disable":""}`}
       onClick={(e) => onClick?.(e, containerRef.current!)}
       onMouseLeave={(e) => onMouseLeave?.(e, containerRef.current!)}
       onMouseEnter={(e) => onMouseEnter?.(e, containerRef.current!)}

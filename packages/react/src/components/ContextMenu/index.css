@@ -8,16 +8,22 @@
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
   cursor: default;
-  font-size: 13px;
+  font-size: 12px;
   margin: 0;
   outline: none;
   padding: 6px 0;
-  position: absolute;
+  position: fixed;
   z-index: 1004;
   box-sizing: border-box;
   user-select: none;
 }
+.luckysheet-cols-menu .luckysheet-cols-menuitem-disable:hover{
+  background-color: #fff !important;
+}
+.luckysheet-cols-menu .luckysheet-cols-menuitem-disable .luckysheet-cols-menuitem-content{
+  color: #aaa !important;
 
+}
 .fortune-context-menu input.luckysheet-mousedown-cancel {
   width: 35px;
   text-align: center;

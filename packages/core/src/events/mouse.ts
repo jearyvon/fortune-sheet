@@ -48,7 +48,7 @@ import {
   pasteHandlerOfPaintModel,
 } from "../modules/selection";
 import { Settings } from "../settings";
-import { GlobalCache } from "../types";
+import { Cell, CellMatrix, GlobalCache } from "../types";
 import { getSheetIndex } from "../utils";
 import { onDropCellSelectEnd, onDropCellSelect } from "../modules/dropCell";
 import {
@@ -201,6 +201,55 @@ function fixPositionOnFrozenCells(
 
   return [x, y];
 }
+function cellRadioHandler(ctx: Context, flowdata: CellMatrix, pos: Record<string, number>, cellInput: HTMLDivElement,) {
+  const { col, col_pre, row, row_pre, mouseX, mouseY, row_index, col_index } = pos;
+  if (ctx.luckysheet_select_save && ctx.luckysheet_select_save.length == 1) {
+    const cellWidthHalf = (col - col_pre) / 4;
+    const cellHeight = (row - row_pre);
+    const pointInCell = {
+      x: mouseX - col_pre,
+      y: mouseY - row_pre,
+    }
+    if ((pointInCell.x > 0 && pointInCell.x < cellWidthHalf) && pointInCell.y > 0 && pointInCell.y < cellHeight) {
+      if (flowdata[row_index]?.[col_index] && flowdata[row_index]?.[col_index]?.radio) {
+        if (flowdata[row_index][col_index] !== null) {
+
+          if (!flowdata[row_index][col_index]?.radio) return;
+          const curCell = flowdata[row_index][col_index];
+          if ((curCell?.radio && curCell?.radio === '1') || !flowdata[row_index][col_index]?.radio) {
+            return;
+          }
+          flowdata[row_index].forEach((item: Cell | null, index: number) => {
+            if (item?.radio === '1') {
+              const tempCell = {
+                ...item,
+                radio: '0',
+              };
+              updateCell(
+                ctx,
+                row_index,
+                index,
+                cellInput,
+                tempCell
+              );
+            }
+          });
+          const cellCopy = { ...curCell, radio: '1' };
+          updateCell(
+            ctx,
+            row_index,
+            col_index,
+            cellInput,
+            cellCopy
+          );
+          ctx.hooks.onCellWithRadioClick?.(flowdata[row_index][col_index], row_index, col_index);
+        }
+      }
+    }
+  }
+
+
+}
 
 export function handleCellAreaMouseDown(
   ctx: Context,
@@ -229,13 +278,17 @@ export function handleCellAreaMouseDown(
   let x = mouseX + ctx.scrollLeft;
   let y = mouseY + ctx.scrollTop;
 
-  console.log(mouseX, mouseY);
   if (x >= rect.width + ctx.scrollLeft || y >= rect.height + ctx.scrollTop) {
     return;
   }
   const freeze = globalCache.freezen?.[ctx.currentSheetId];
   [x, y] = fixPositionOnFrozenCells(freeze, x, y, mouseX, mouseY);
-
+  if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
+    ctx.luckysheet_select_save = [];
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
   const row_location = rowLocation(y, ctx.visibledatarow);
   let row = row_location[1];
   let row_pre = row_location[0];
@@ -267,22 +320,7 @@ export function handleCellAreaMouseDown(
   ) {
     return;
   }
-  if (ctx.luckysheet_select_save && ctx.luckysheet_select_save.length == 1) {
-    const cellWidthHalf = (col - col_pre) / 2;
-    const cellHeight = (row - row_pre);
-    const pointInCell = {
-      x: mouseX - col_pre,
-      y: mouseY - row_pre,
-    }
-    if ((pointInCell.x > 0 && pointInCell.x < cellWidthHalf) && pointInCell.y > 0 && pointInCell.y < cellHeight) {
-      if (flowdata[row_index]?.[col_index] && flowdata[row_index]?.[col_index]?.radio) {
-        if (flowdata[row_index][col_index] !== null) {
-          const tempCell = JSON.parse(JSON.stringify(flowdata[row_index][col_index]));
-          const cellData = ctx.hooks.onCellWithRadioClick?.(flowdata[row_index][col_index], row_index, col_index);
-        }
-      }
-    }
-  }
+
   // //数据验证 单元格聚焦
   // dataVerificationCtrl.cellFocus(row_index, col_index, true);
 
@@ -1192,6 +1230,10 @@ export function handleCellAreaMouseDown(
   // pivotTable.pivotclick(row_index, col_index, ctx.currentSheetId);
 
   // luckysheetContainerFocus();
+  // radio
+  cellRadioHandler(ctx, flowdata, {
+    col, col_pre, row, row_pre, mouseX, mouseY, row_index, col_index
+  }, cellInput);
 
   ctx.luckysheet_select_save = normalizeSelection(
     ctx,
@@ -1259,7 +1301,13 @@ export function handleCellAreaDoubleClick(
   const mouseY = e.pageY - rect.top;
   let x = mouseX + ctx.scrollLeft;
   let y = mouseY + ctx.scrollTop;
-
+  if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
+    ctx.contextMenu = undefined;
+    ctx.luckysheet_select_save = [];
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
   const freeze = globalCache.freezen?.[ctx.currentSheetId];
   [x, y] = fixPositionOnFrozenCells(freeze, x, y, mouseX, mouseY);
 
@@ -1427,8 +1475,8 @@ export function handleContextMenu(
   }
 
   // relative to the workbook container
-  const x = e.pageX - workbookRect.left;
-  const y = e.pageY - workbookRect.top;
+  const x = e.pageX - workbookRect.left + 10;
+  const y = e.pageY - workbookRect.top + 5;
   // showrightclickmenu($("#luckysheet-rightclick-menu"), x, y);
   ctx.contextMenu = {
     x,
@@ -1451,6 +1499,14 @@ export function handleContextMenu(
       mouseX,
       mouseY
     );
+
+    if (selected_y > (_.last(ctx.visibledatarow) || 0) || selected_x > (_.last(ctx.visibledatacolumn) || 0)) {
+      ctx.contextMenu = undefined;
+      ctx.luckysheet_select_save = [];
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     const row_location = rowLocation(selected_y, ctx.visibledatarow);
     const row = row_location[1];
     const row_pre = row_location[0];
