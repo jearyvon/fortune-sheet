@@ -312,9 +312,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
         });
       }
     }, [emitOp]);
-    window._undo = handleUndo;
-
-
+    
     const handleRedo = useCallback(() => {
       const history = globalCache.current.redoList.pop();
       if (history) {
