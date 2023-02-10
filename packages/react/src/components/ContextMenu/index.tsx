@@ -28,10 +28,14 @@ import Menu from "./Menu";
 const ContextMenu: React.FC = () => {
   const { showDialog } = useDialog();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { context, setContext, settings } = useContext(WorkbookContext);
+
+  const { context, setContext, settings,handleUndo , refs} = useContext(WorkbookContext);
   const { contextMenu } = context;
   const { showAlert } = useAlert();
   const { rightclick, drag, generalDialog, info } = locale(context);
+
+  const undoList = refs.globalCache.undoList;
+
   const getMenuElement = useCallback(
     (name: string, i: number) => {
       const selection = context.luckysheet_select_save?.[0];
@@ -97,6 +101,22 @@ const ContextMenu: React.FC = () => {
             }}
           >
             {rightclick.paste}
+          </Menu>
+        );
+      }
+      if (name === "undo") {
+        return (
+          <Menu
+            key={name}
+            disable={(undoList.length===0)}
+            onClick={() => {
+              handleUndo()
+              setContext((draftCtx) => {
+                draftCtx.contextMenu = undefined;
+              });
+            }}
+          >
+            {rightclick.undo}
           </Menu>
         );
       }

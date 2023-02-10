@@ -130,9 +130,6 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     );
 
     function reduceUndoList(ctx: Context, ctxBefore: Context) {
-
-
-      console.log('reduceUndoList');
       const sheetsId = ctx.luckysheetfile.map((sheet) => sheet.id);
       const sheetDeletedByMe = globalCache.current.undoList
         .filter((undo) => undo.options?.deleteSheetOp)
@@ -265,8 +262,8 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     );
 
     const handleUndo = useCallback(() => {
-      console.log('handleUndo,',globalCache.current.undoList)
       const history = globalCache.current.undoList.pop();
+      debugger
       if (history) {
         setContext((ctx_) => {
           if (history.options?.deleteSheetOp) {
@@ -315,6 +312,8 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
         });
       }
     }, [emitOp]);
+    window._undo = handleUndo;
+
 
     const handleRedo = useCallback(() => {
       const history = globalCache.current.redoList.pop();
@@ -591,6 +590,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
           <div
             className="fortune-container"
             ref={workbookContainer}
+            id="sheet-main-wrap"
             onKeyDown={onKeyDown}
           >
             <SVGDefines />
