@@ -284,7 +284,7 @@ export function handleCellAreaMouseDown(
   const freeze = globalCache.freezen?.[ctx.currentSheetId];
   [x, y] = fixPositionOnFrozenCells(freeze, x, y, mouseX, mouseY);
   if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
-    if (ctx.luckysheetCellUpdate.length > 0 && fxInput) {
+    if (ctx.luckysheetCellUpdate.length > 0 && cellInput) {
       updateCell(
         ctx,
         ctx.luckysheetCellUpdate[0],

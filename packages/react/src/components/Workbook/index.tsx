@@ -309,6 +309,8 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
           emitOp(newContext, history.inversePatches, inversedOptions, true);
           return newContext;
         });
+      } else {
+        console.log('table undo end');
       }
     }, [emitOp]);
     
@@ -321,6 +323,8 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
           emitOp(newContext, history.patches, history.options);
           return newContext;
         });
+      } else {
+        console.log('table redo end');
       }
     }, [emitOp]);
 
@@ -509,7 +513,6 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
         const { nativeEvent } = e;
-        console.info("handle redo/undo");
         if (
           (e.ctrlKey || e.metaKey) &&
           e.key === "z"
