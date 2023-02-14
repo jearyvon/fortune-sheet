@@ -263,7 +263,6 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
 
     const handleUndo = useCallback(() => {
       const history = globalCache.current.undoList.pop();
-      debugger
       if (history) {
         setContext((ctx_) => {
           if (history.options?.deleteSheetOp) {
@@ -434,14 +433,14 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
               ];
             } else {
               draftCtx.luckysheet_select_save = [
-                {
-                  row: [0, 0],
-                  column: [0, 0],
-                },
+                // {
+                //   row: [0, 0],
+                //   column: [0, 0],
+                // },
               ];
             }
           }
-
+          
           draftCtx.config = _.isNil(sheet.config) ? {} : sheet.config;
           draftCtx.insertedImgs = sheet.images;
 
@@ -510,21 +509,35 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
         const { nativeEvent } = e;
-        setContextWithProduce((draftCtx) => {
-          handleGlobalKeyDown(
-            draftCtx,
-            cellInput.current!,
-            fxInput.current!,
-            nativeEvent,
-            globalCache.current!,
-            handleUndo,
-            handleRedo
-          );
-        });
+        console.info("handle redo/undo");
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key === "z"
+        ) {
+          // eslint-disable-next-line no-console
+          console.info("handle redo/undo");
+          if (e.shiftKey) {
+            handleRedo();
+          } else {
+            handleUndo();
+          }
+        } else {
+          setContextWithProduce((draftCtx) => {
+            handleGlobalKeyDown(
+              draftCtx,
+              cellInput.current!,
+              fxInput.current!,
+              nativeEvent,
+              globalCache.current!,
+              handleUndo,
+              handleRedo
+            );
+          });
+        }
       },
       [handleRedo, handleUndo, setContextWithProduce]
     );
-
+    
     const onPaste = useCallback(
       (e: ClipboardEvent) => {
         // deal with multi instance case, only the focused sheet handles the paste

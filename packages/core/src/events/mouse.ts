@@ -284,7 +284,17 @@ export function handleCellAreaMouseDown(
   const freeze = globalCache.freezen?.[ctx.currentSheetId];
   [x, y] = fixPositionOnFrozenCells(freeze, x, y, mouseX, mouseY);
   if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
+    if (ctx.luckysheetCellUpdate.length > 0 && fxInput) {
+      updateCell(
+        ctx,
+        ctx.luckysheetCellUpdate[0],
+        ctx.luckysheetCellUpdate[1],
+        cellInput
+      );
+    }
     ctx.luckysheet_select_save = [];
+    ctx.luckysheet_select_status = false;
+    // ctx.luckysheetCellUpdate = [];
     e.preventDefault();
     e.stopPropagation();
     return;

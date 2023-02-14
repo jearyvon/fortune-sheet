@@ -125,7 +125,7 @@ const InputBox: React.FC = () => {
     setIsHidenRC(isShowHidenCR(context));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context.luckysheet_select_save]);
-
+  
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       lastKeyDownEventRef.current = new KeyboardEvent(e.type, e.nativeEvent);
@@ -137,7 +137,7 @@ const InputBox: React.FC = () => {
       // ) {
       //   return;
       // }
-
+      e.stopPropagation();
       if (e.key === "Escape" && context.luckysheetCellUpdate.length > 0) {
         setContext((draftCtx) => {
           cancelNormalSelected(draftCtx);
@@ -218,6 +218,7 @@ const InputBox: React.FC = () => {
     (__: any, isBlur?: boolean) => {
       // setInputHTML(html);
       const e = lastKeyDownEventRef.current;
+   
       if (!e) return;
       const kcode = e.keyCode;
       if (!kcode) return;
@@ -319,7 +320,10 @@ const InputBox: React.FC = () => {
             }
           : { left: -10000, top: -10000, display: "block" }
       }
-      onMouseDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
       onMouseUp={(e) => e.stopPropagation()}
     >
       <div
@@ -345,6 +349,7 @@ const InputBox: React.FC = () => {
           aria-autocomplete="list"
           onChange={onChange}
           onKeyDown={onKeyDown}
+          onMouseDown={(e) => e.stopPropagation()}
           onPaste={onPaste}
           allowEdit={edit ? !isHidenRC : edit}
         />

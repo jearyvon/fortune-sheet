@@ -158,7 +158,8 @@ export function handleWithCtrlOrMetaKey(
       handleFormulaInput(ctx, fxInput, cellInput, e.keyCode);
     } else if (e.key === "z") {
       // Ctrl + shift + z 重做
-      handleRedo();
+      // handleRedo();
+      setTimeout(handleRedo);
       e.stopPropagation();
       return;
     }
