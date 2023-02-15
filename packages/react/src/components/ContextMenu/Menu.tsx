@@ -28,7 +28,10 @@ const Menu: React.FC<Props> = ({
     <div
       ref={containerRef}
       className={`luckysheet-cols-menuitem luckysheet-mousedown-cancel ${disable?"luckysheet-cols-menuitem-disable":""}`}
-      onClick={(e) => onClick?.(e, containerRef.current!)}
+      onClick={(e) => {
+        if (disable) return;
+        onClick?.(e, containerRef.current!)
+      }}
       onMouseLeave={(e) => onMouseLeave?.(e, containerRef.current!)}
       onMouseEnter={(e) => onMouseEnter?.(e, containerRef.current!)}
     >

@@ -36,6 +36,41 @@ const ContextMenu: React.FC = () => {
 
   const undoList = refs.globalCache.undoList;
 
+  const getStatus = (isRow=true) => {
+    const ci = getSheetIndex(context, context.currentSheetId);
+  if (ci != null) {
+    const sheet = context.luckysheetfile[ci];
+    console.log(sheet.maxColumn, sheet.column);
+    if (sheet) {
+      if (isRow) {
+        const row = sheet.data ? sheet.data.length : 1;
+        if (sheet.maxRow &&  sheet.maxRow <= row) {
+          return false;
+        }
+      } else {
+        const column = sheet.data && sheet.data[0] ? sheet.data[0].length : 1;
+        if (sheet.maxColumn && sheet.maxColumn <= column) {
+          console.log('getStatus',false)
+          return false;
+        }
+
+      }
+    }
+    if (isRow) {
+      if (sheet.maxColumn && sheet.column && sheet.maxColumn <= sheet.column) {
+        console.log('getStatus',false)
+        return false;
+      }
+    } else {
+      if (sheet.maxRow && sheet.row &&  sheet.maxRow <= sheet.row) {
+        return false;
+      }
+    }
+    console.log('getStatus',true)
+    return true;
+  }
+}
+
   const getMenuElement = useCallback(
     (name: string, i: number) => {
       const selection = context.luckysheet_select_save?.[0];
@@ -46,6 +81,8 @@ const ContextMenu: React.FC = () => {
       if (context.luckysheet_select_save && context.luckysheet_select_save?.length > 1) {
         disableMerge = true;
       }
+
+     
       if (name === "|") {
         return <Divider key={`divider-${i}`} />;
       }
@@ -125,7 +162,8 @@ const ContextMenu: React.FC = () => {
           ? null
           : ["left", "right"].map((dir) => (
               <Menu
-                key={`add-col-${dir}`}
+              key={`add-col-${dir}`}
+              disable={!getStatus(false)}
                 onClick={(e) => {
                   const position =
                     context.luckysheet_select_save?.[0]?.column?.[0];
@@ -194,7 +232,8 @@ const ContextMenu: React.FC = () => {
           ? null
           : ["top", "bottom"].map((dir) => (
               <Menu
-                key={`add-row-${dir}`}
+              key={`add-row-${dir}`}
+              disable={!getStatus()}
                 onClick={(e, container) => {
                   const position =
                     context.luckysheet_select_save?.[0]?.row?.[0];

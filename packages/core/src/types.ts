@@ -130,6 +130,8 @@ export type Sheet = {
   zoomRatio?: number;
   column?: number;
   row?: number;
+  maxColumn?: number;
+  maxRow?: number;
   addRows?: number;
   status?: number;
   hide?: number;
