@@ -998,12 +998,16 @@ export function insertRowCol(
         { row: [index + 1, index + count], column: [0, d[0].length - 1] },
       ];
     }
+
+    file.row = count + file.row!;
+
   } else {
     if (direction === "lefttop") {
       range = [{ row: [0, d.length - 1], column: [index, index + count - 1] }];
     } else {
       range = [{ row: [0, d.length - 1], column: [index + 1, index + count] }];
     }
+    file.column = count + file.column!;
   }
 
   file.luckysheet_select_save = range;

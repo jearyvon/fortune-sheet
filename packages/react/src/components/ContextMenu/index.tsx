@@ -40,7 +40,6 @@ const ContextMenu: React.FC = () => {
     const ci = getSheetIndex(context, context.currentSheetId);
   if (ci != null) {
     const sheet = context.luckysheetfile[ci];
-    console.log(sheet.maxColumn, sheet.column);
     if (sheet) {
       if (isRow) {
         const row = sheet.data ? sheet.data.length : 1;
@@ -50,23 +49,10 @@ const ContextMenu: React.FC = () => {
       } else {
         const column = sheet.data && sheet.data[0] ? sheet.data[0].length : 1;
         if (sheet.maxColumn && sheet.maxColumn <= column) {
-          console.log('getStatus',false)
           return false;
         }
-
       }
     }
-    if (isRow) {
-      if (sheet.maxColumn && sheet.column && sheet.maxColumn <= sheet.column) {
-        console.log('getStatus',false)
-        return false;
-      }
-    } else {
-      if (sheet.maxRow && sheet.row &&  sheet.maxRow <= sheet.row) {
-        return false;
-      }
-    }
-    console.log('getStatus',true)
     return true;
   }
 }
