@@ -273,8 +273,8 @@ export function handleCellAreaMouseDown(
   // );
   cancelActiveImgItem(ctx, globalCache);
   const rect = container.getBoundingClientRect();
-  const mouseX = e.pageX - rect.left;
-  const mouseY = e.pageY - rect.top;
+  const mouseX = e.pageX - rect.left - window.scrollX;
+  const mouseY = e.pageY - rect.top - window.scrollY;
   let x = mouseX + ctx.scrollLeft;
   let y = mouseY + ctx.scrollTop;
 
@@ -1307,8 +1307,8 @@ export function handleCellAreaDoubleClick(
   // let x = mouse[0] + scrollLeft;
   // let y = mouse[1] + scrollTop;
   const rect = container.getBoundingClientRect();
-  const mouseX = e.pageX - rect.left;
-  const mouseY = e.pageY - rect.top;
+  const mouseX = e.pageX - rect.left - window.scrollX;
+  const mouseY = e.pageY - rect.top - window.scrollY;
   let x = mouseX + ctx.scrollLeft;
   let y = mouseY + ctx.scrollTop;
   if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
@@ -1678,10 +1678,10 @@ function mouseRender(
   ) {
     const left = ctx.scrollLeft;
     const top = ctx.scrollTop;
-    const x = e.pageX - rect.left;
-    const y = e.pageY - rect.top;
-    const winH = rect.height - 20 * ctx.zoomRatio;
-    const winW = rect.width - 60 * ctx.zoomRatio;
+    const x = e.pageX - rect.left - ctx.mainBoxRect.left;
+    const y = e.pageY - rect.top - ctx.mainBoxRect.left;
+    const winH = rect.height - ctx.columnHeaderHeight * ctx.zoomRatio;
+    const winW = rect.width - ctx.rowHeaderWidth * ctx.zoomRatio;
 
     if (y < 0 || y > winH) {
       let stop;
@@ -1706,9 +1706,18 @@ function mouseRender(
   }
   // 拖动选择
   if (ctx.luckysheet_select_status) {
-    const x = e.pageX - rect.left - ctx.rowHeaderWidth + ctx.scrollLeft;
-    const y = e.pageY - rect.top - ctx.columnHeaderHeight + ctx.scrollTop;
-
+    const x =
+      e.pageX -
+      rect.left -
+      window.scrollX -
+      ctx.rowHeaderWidth +
+      ctx.scrollLeft;
+    const y =
+      e.pageY -
+      rect.top -
+      window.scrollY -
+      ctx.columnHeaderHeight +
+      ctx.scrollTop;
     const row_location = rowLocation(y, ctx.visibledatarow);
     const row = row_location[1];
     const row_pre = row_location[0];
@@ -1729,7 +1738,29 @@ function mouseRender(
       ctx.luckysheet_select_status = false;
       return;
     }
+    if (ctx.luckysheet_rank_move_status) {
+      // console.log(JSON.stringify(ctx.luckysheet_select_save));
+      const changeSizeLine = container.querySelector(
+        ".fortune-rank-move-line"
+      );
+      const select = ctx.luckysheet_select_save?.[0];
+      if (select?.column_select) {
+        if (changeSizeLine) {
+          (changeSizeLine as HTMLDivElement).style.left = `${col - 1}px`;
+          (changeSizeLine as HTMLDivElement).style.top = `0px`;
+          (changeSizeLine as HTMLDivElement).style.width = "0px";
+          (changeSizeLine as HTMLDivElement).style.height = `${rect.height}px`;
+        }
+        return;
+      } else if (select?.row_select) {
+        (changeSizeLine as HTMLDivElement).style.left = `0px`;
+        (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
+        (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
+        (changeSizeLine as HTMLDivElement).style.height = '0px';
+        return;
+      }
 
+    }
     const last = _.cloneDeep(
       ctx.luckysheet_select_save?.[ctx.luckysheet_select_save.length - 1]
     );
@@ -3652,6 +3683,35 @@ export function handleOverlayMouseUp(
     // ctx.countfuncTimeout = setTimeout(function () {
     //   countfunc();
     // }, 0);
+    if (ctx.luckysheet_rank_move_status) {
+      ctx.luckysheet_rank_move_status = false;
+      const x = e.pageX - rect.left - window.scrollX - ctx.rowHeaderWidth + ctx.scrollLeft;
+      const y = e.pageY - rect.top - window.scrollY - ctx.columnHeaderHeight + ctx.scrollTop;
+      const row_location = rowLocation(y, ctx.visibledatarow);
+      const row = row_location[1];
+      const row_pre = row_location[0];
+      const row_index = row_location[2];
+      const col_location = colLocation(x, ctx.visibledatacolumn);
+      const col = col_location[1];
+      const col_pre = col_location[0];
+      const col_index = col_location[2];
+      const select = ctx.luckysheet_select_save?.[0];
+      console.log(JSON.stringify(select));
+      if (select?.column_select) {
+        if (select.column[0] == col_index) {
+          console.log('没变了')
+        } else {
+          console.log('变1')
+        }
+      } else if (select?.row_select) {
+        if (select.row[0] == row_index) {
+          console.log('没变了')
+        } else {
+          console.log('变1')
+        }
+      }
+    }
+
     // 格式刷
     if (ctx.luckysheetPaintModelOn) {
       pasteHandlerOfPaintModel(ctx, ctx.luckysheet_copy_save);
@@ -3660,6 +3720,9 @@ export function handleOverlayMouseUp(
         cancelPaintModel(ctx);
       }
     }
+
+
+
   }
 
   ctx.luckysheet_select_status = false;
@@ -4556,6 +4619,26 @@ export function handleRowHeaderMouseDown(
     // 允许编辑后的后台更新时
     // server.saveParam("mv", ctx.currentSheetId, ctx.luckysheet_select_save);
   }
+
+
+  if (ctx.luckysheet_rank_move_status) {
+    // console.log(JSON.stringify(ctx.luckysheet_select_save));
+    const changeSizeLine = container.querySelector(
+      ".fortune-rank-move-line"
+    );
+    console.log(container);
+    const select = ctx.luckysheet_select_save?.[0];
+    console.log('2222 mouseDown');
+    if (select?.row_select) {
+
+      (changeSizeLine as HTMLDivElement).style.left = `0px`;
+      (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
+      (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
+      (changeSizeLine as HTMLDivElement).style.height = '0px';
+      return;
+    }
+  }
+
 }
 
 export function handleColumnHeaderMouseDown(
@@ -4971,7 +5054,45 @@ export function handleColumnHeaderMouseDown(
     // // 允许编辑后的后台更新时
     // server.saveParam("mv", ctx.currentSheetId, ctx.luckysheet_select_save);
   }
+
+
+  if (ctx.luckysheet_rank_move_status) {
+    // console.log(JSON.stringify(ctx.luckysheet_select_save));
+    const changeSizeLine = container.querySelector(
+      ".fortune-rank-move-line"
+    );
+    const select = ctx.luckysheet_select_save?.[0];
+    // console.log('2222 mouseDown');
+    if (select?.column_select) {
+      if (changeSizeLine) {
+        (changeSizeLine as HTMLDivElement).style.left = `${col - 1}px`;
+        (changeSizeLine as HTMLDivElement).style.top = `0px`;
+        (changeSizeLine as HTMLDivElement).style.width = "0px";
+        (changeSizeLine as HTMLDivElement).style.height = `${rect.height}px`;
+      }
+      return;
+    } else if (select?.row_select) {
+
+      (changeSizeLine as HTMLDivElement).style.left = `0px`;
+      (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
+      (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
+      (changeSizeLine as HTMLDivElement).style.height = '0px';
+      return;
+    }
+  }
 }
+// export function handleCellRankChangeMouseDown(
+//   ctx: Context,
+//   globalCache: GlobalCache,
+//   e: MouseEvent,
+//   headerContainer: HTMLDivElement,
+//   workbookContainer: HTMLDivElement,
+//   cellArea: HTMLDivElement,
+//   type="row"
+// ) {
+//   ctx.luckysheet_cols_change_size_start = [col_pre, col_index];
+// } 
+
 
 export function handleColSizeHandleMouseDown(
   ctx: Context,

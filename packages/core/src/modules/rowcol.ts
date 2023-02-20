@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Context } from "../context";
-import { Sheet } from "../types";
+import { Cell, Sheet } from "../types";
 import { getSheetIndex } from "../utils";
 import { getcellFormula } from "./cell";
 import { functionStrChange } from "./formula";
@@ -2086,4 +2086,35 @@ export function hideCRCount(ctx: Context, type: string): number {
   }
 
   return count;
+}
+
+//交换行列
+export function exchangeRowOrColRank(ctx: Context, type: string, from: number, to: number) {
+  const curOrder = getSheetIndex(ctx, ctx.currentSheetId);
+  if (curOrder == null) return;
+  const file = ctx.luckysheetfile[curOrder];
+  if (!file) return;
+  const d = file.data;
+  if (!d) return;
+
+  function checkMerge(data: (Cell | null)[]): boolean {
+
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      if (element && element.mc) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (type === 'row') {
+    const tempFromRow = d[from];
+    const toTempRow = d[to];
+    if (checkMerge(tempFromRow) || checkMerge(toTempRow)) {
+      throw "移动项不能包含合并单元格"
+    }
+
+  } else {
+
+  }
 }

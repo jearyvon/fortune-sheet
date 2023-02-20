@@ -516,6 +516,12 @@ function pasteHandlerOfCutPaste(
   }
   if (!copyRange) return;
 
+  ctx.luckysheetCellUpdate = [];
+
+  // $("#luckysheet-rich-text-editor").blur();
+  selectionCache.isPasteAction = false;
+  ctx.luckysheet_selection_range = [];
+
   const cfg = ctx.config || {};
   if (cfg.merge == null) {
     cfg.merge = {};
@@ -1382,7 +1388,7 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
   if (!ctx.allowEdit) {
     return;
   }
-
+  console.log('handlePaste')
   if (selectionCache.isPasteAction) {
     ctx.luckysheetCellUpdate = [];
     // $("#luckysheet-rich-text-editor").blur();
@@ -1576,8 +1582,8 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
             const fontWight = td.style.fontWeight;
             cell.bl =
               fontWight.toString() === "400" ||
-              fontWight === "normal" ||
-              _.isEmpty(fontWight)
+                fontWight === "normal" ||
+                _.isEmpty(fontWight)
                 ? 0
                 : 1;
 
@@ -1828,3 +1834,5 @@ export function handlePasteByClick(ctx: Context, triggerType?: string) {
   }
   // }, 10);
 }
+
+

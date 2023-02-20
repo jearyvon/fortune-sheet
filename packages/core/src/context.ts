@@ -125,6 +125,9 @@ export type Context = {
 
   luckysheet_rows_selected_status: boolean; // 行列标题相关参
   luckysheet_cols_selected_status: boolean;
+
+  luckysheet_rank_move_status: boolean; // 拖拽行列首移动
+
   luckysheet_rows_change_size: boolean;
   luckysheet_rows_change_size_start: any[];
   luckysheet_cols_change_size: boolean;
@@ -163,7 +166,14 @@ export type Context = {
 
   luckysheetPaintModelOn: boolean;
   luckysheetPaintSingle: boolean;
-
+  mainBoxRect: {
+    left: number;
+    top: number;
+    bottom: number;
+    right: number;
+    width: number;
+    height: number;
+  };// 表格容器的react信息
   // 默认单元格
   defaultCell: Cell;
 
@@ -241,6 +251,8 @@ export function defaultContext(): Context {
     luckysheet_cols_change_size: false,
     luckysheet_cols_change_size_start: [],
 
+    luckysheet_rank_move_status: false,
+
     luckysheetCellUpdate: [],
 
     luckysheet_shiftkeydown: false,
@@ -274,7 +286,14 @@ export function defaultContext(): Context {
 
     luckysheetPaintModelOn: false,
     luckysheetPaintSingle: false,
-
+    mainBoxRect: {
+      width: 100,
+      height: 100,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    },
     // 默认单元格
     defaultCell: {
       bl: 0,

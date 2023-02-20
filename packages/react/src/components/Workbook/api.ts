@@ -339,5 +339,12 @@ export function generateAPIs(
         });
       });
     },
+    freeTable: () => {
+
+      setContext((draftCtx) => {
+        cellInput?.blur();
+        draftCtx.luckysheet_select_save = [];
+      });
+    }
   };
 }

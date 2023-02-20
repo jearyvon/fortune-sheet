@@ -282,3 +282,17 @@
   top: 3px;
   right: -18px;
 }
+
+.luckysheet-cols-menuitem-content .shortcut-icon{
+ width: 30px;
+ display: block;
+ height: 16px;
+ line-height: 16px;
+ text-align: right;
+ float: right;
+ font-size: 12px;
+}
+.luckysheet-cols-menuitem-content .shortcut-icon .command-icon{
+  font-size: 16px;
+  line-height: 16px;
+}

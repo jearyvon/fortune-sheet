@@ -212,6 +212,7 @@ export const defaultSettings: Required<Settings> = {
   cellContextMenu: [
     "copy", // 复制
     "paste", // 粘贴
+    "cut",
     "undo",
     "|",
     "merge-cell",

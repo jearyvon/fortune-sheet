@@ -16,7 +16,6 @@ import React, {
   useEffect,
 } from "react";
 import WorkbookContext from "../../context";
-import SVGIcon from "../SVGIcon";
 
 const ColumnHeader: React.FC = () => {
   const { context, setContext, settings, refs } = useContext(WorkbookContext);
@@ -50,6 +49,7 @@ const ColumnHeader: React.FC = () => {
       context.visibledatacolumn,
       hoverLocation.col,
       hoverLocation.col_pre,
+      selectedLocation
     ]
   );
 
@@ -112,6 +112,16 @@ const ColumnHeader: React.FC = () => {
     [refs.workbookContainer, setContext, settings, refs.cellArea]
   );
 
+  const onColChangeRankMoveDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const { nativeEvent } = e;
+      setContext((draftCtx) => {
+        draftCtx.luckysheet_rank_move_status = true;
+      })
+    },
+    [ setContext,selectedLocation]
+  );
+
   useEffect(() => {
     const s = context.luckysheet_select_save;
     if (_.isNil(s)) return;
@@ -131,6 +141,7 @@ const ColumnHeader: React.FC = () => {
       const col_pre = colLocationByIndex(c1, context.visibledatacolumn)[0];
       if (_.isNumber(col) && _.isNumber(col_pre)) {
         selects.push({ col, col_pre });
+
       }
     }
     setSelectedLocation(selects);
@@ -139,7 +150,14 @@ const ColumnHeader: React.FC = () => {
   useEffect(() => {
     containerRef.current!.scrollLeft = context.scrollLeft;
   }, [context.scrollLeft]);
-
+  const getStyle = useCallback(() => {
+    if (!selectedLocation[0]) return {}
+    return {
+      left: selectedLocation[0].col_pre +1.5,
+      height: context.columnHeaderHeight - 1.5,
+      width: selectedLocation[0].col - selectedLocation[0].col_pre - 3,
+    }
+  },[selectedLocation,context.columnHeaderHeight])
   return (
     <div
       ref={containerRef}
@@ -152,6 +170,7 @@ const ColumnHeader: React.FC = () => {
       onMouseLeave={onMouseLeave}
       onContextMenu={onContextMenu}
     >
+      <div className="fortune-cols-change-col-rank" onMouseDown={onColChangeRankMoveDown} style={getStyle()} />
       <div
         className="fortune-cols-change-size"
         ref={colChangeSizeRef}
@@ -162,6 +181,7 @@ const ColumnHeader: React.FC = () => {
           opacity: context.luckysheet_cols_change_size ? 1 : 0,
         }}
       />
+      
       {!context.luckysheet_cols_change_size &&
       hoverLocation.col >= 0 &&
       hoverLocation.col_pre >= 0 ? (
@@ -173,20 +193,6 @@ const ColumnHeader: React.FC = () => {
             display: "block",
           }}
         >
-          {/* <span
-            className="header-arrow"
-            onClick={(e) => {
-              setContext((ctx) => {
-                ctx.contextMenu = {
-                  x: e.pageX,
-                  y: 90,
-                  headerMenu: true,
-                };
-              });
-            }}
-          >
-            <SVGIcon name="headDownArrow" width={12} />
-          </span> */}
         </div>
       ) : null}
       {selectedLocation.map(({ col, col_pre }, i) => (

@@ -436,6 +436,12 @@ const SheetOverlay: React.FC = () => {
             }
           />
           <div
+            className="fortune-rank-move-line"
+            hidden={
+              !context.luckysheet_rank_move_status
+            }
+          />
+          <div
             className="luckysheet-cell-selected-focus"
             style={
               (context.luckysheet_select_save?.length ?? 0) > 0

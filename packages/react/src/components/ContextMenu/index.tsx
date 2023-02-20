@@ -2,6 +2,7 @@ import {
   locale,
   handleCopy,
   handlePasteByClick,
+  handleCutByClick,
   deleteRowCol,
   insertRowCol,
   removeActiveImage,
@@ -89,6 +90,9 @@ const ContextMenu: React.FC = () => {
             }}
           >
             {rightclick.copy}
+            <span className="shortcut-icon">
+            <span className="command-icon">⌘</span> + C
+            </span>
           </Menu>
         );
       }
@@ -124,6 +128,27 @@ const ContextMenu: React.FC = () => {
             }}
           >
             {rightclick.paste}
+            <span className="shortcut-icon">
+            <span className="command-icon">⌘</span> + V
+            </span>
+          </Menu>
+        );
+      }
+      if (name === "cut") {
+        return (
+          <Menu
+            key={name}
+            onClick={() => {
+              setContext((draftCtx) => {
+                handleCutByClick(draftCtx);
+                draftCtx.contextMenu = undefined;
+              });
+            }}
+          >
+            {rightclick.cut}
+            <span className="shortcut-icon">
+            <span className="command-icon">⌘</span> + X
+            </span>
           </Menu>
         );
       }
@@ -140,6 +165,9 @@ const ContextMenu: React.FC = () => {
             }}
           >
             {rightclick.undo}
+            <span className="shortcut-icon">
+            <span className="command-icon">⌘</span> + Z
+            </span>
           </Menu>
         );
       }

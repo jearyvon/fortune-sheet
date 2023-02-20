@@ -133,6 +133,25 @@ const RowHeader: React.FC = () => {
     setSelectedLocation(selects);
   }, [context.luckysheet_select_save, context.visibledatarow]);
 
+  const getStyle = useCallback(() => {
+    if (!selectedLocation[0]) return {}
+    return {
+      top: selectedLocation[0].row_pre +1.5,
+      width: context.rowHeaderWidth - 1.5,
+      height: selectedLocation[0].row - selectedLocation[0].row_pre - 3,
+    }
+  }, [selectedLocation, context.columnHeaderHeight])
+  
+  const onColChangeRankMoveDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const { nativeEvent } = e;
+      setContext((draftCtx) => {
+        draftCtx.luckysheet_rank_move_status = true;
+      })
+    },
+    [ setContext,selectedLocation]
+  );
+
   useEffect(() => {
     containerRef.current!.scrollTop = context.scrollTop;
   }, [context.scrollTop]);
@@ -150,6 +169,7 @@ const RowHeader: React.FC = () => {
       onMouseLeave={onMouseLeave}
       onContextMenu={onContextMenu}
     >
+    <div className="fortune-cols-change-col-rank" onMouseDown={onColChangeRankMoveDown} style={getStyle()} />
       <div
         className="fortune-rows-change-size"
         ref={rowChangeSizeRef}

@@ -1052,9 +1052,8 @@ export function rangeValueToHtml(
           ) {
             colgroup += '<colgroup width="72px"></colgroup>';
           } else {
-            colgroup += `<colgroup width="${
-              sheet.config.columnlen[c.toString()]
-            }px"></colgroup>`;
+            colgroup += `<colgroup width="${sheet.config.columnlen[c.toString()]
+              }px"></colgroup>`;
           }
         }
 
@@ -1397,9 +1396,8 @@ export function rangeValueToHtml(
           ) {
             colgroup += '<colgroup width="72px"></colgroup>';
           } else {
-            colgroup += `<colgroup width="${
-              sheet.config.columnlen[c.toString()]
-            }px"></colgroup>`;
+            colgroup += `<colgroup width="${sheet.config.columnlen[c.toString()]
+              }px"></colgroup>`;
           }
         }
 
@@ -1672,7 +1670,11 @@ export function getSelectionStyle(
     width: selection.width_move,
     height: selection.height_move,
     display: "block",
+    backgroundColor: "rgba(1, 136, 251, 0.15)"
   };
+  if (ctx.luckysheet_rank_move_status) {
+    ret['backgroundColor'] = 'rgba(44, 44, 44, 0.15)'
+  }
   if (!freeze) return ret;
 
   const { scrollTop } = ctx;

@@ -371,6 +371,15 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
     }, [context.luckysheetfile, onChange]);
 
     useEffect(() => {
+      if (workbookContainer.current) {
+        const rect = workbookContainer.current.getBoundingClientRect();
+        setContextWithProduce((ctx) => {
+          ctx.mainBoxRect = rect;
+        })
+      }
+    }, [setContextWithProduce,workbookContainer.current]);
+
+    useEffect(() => {
       setContextWithProduce(
         (draftCtx) => {
           draftCtx.defaultcolumnNum = mergedSettings.column;

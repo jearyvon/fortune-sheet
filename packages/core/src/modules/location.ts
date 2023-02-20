@@ -2,14 +2,13 @@ import _ from "lodash";
 import { Context } from "../context";
 
 export function mousePosition(x: number, y: number, ctx: Context) {
-  const newX = x - ctx.rowHeaderWidth;
-  const newY =
-    y -
-    // ctx.infobarHeight -
-    ctx.toolbarHeight -
-    ctx.calculatebarHeight -
-    ctx.columnHeaderHeight;
-
+  let left = 0, top = 0;
+  if (ctx.mainBoxRect && ctx.mainBoxRect.left) {
+    left = ctx.mainBoxRect.left;
+    top = ctx.mainBoxRect.top;
+  }
+  const newX = x - ctx.rowHeaderWidth - left;
+  const newY = y - ctx.columnHeaderHeight - top;
   return [newX, newY];
 }
 

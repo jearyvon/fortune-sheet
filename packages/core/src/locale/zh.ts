@@ -11475,6 +11475,7 @@ export default {
     copyAs: "复制为",
     paste: "粘贴",
     undo: "撤销",
+    cut: "剪切",
     insert: "插入",
     image: "插入图片",
     link: "插入链接",

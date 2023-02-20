@@ -103,10 +103,9 @@ export function onCellsMove(
     globalCache.dragCellStartPos = undefined;
   }
   const [x, y] = mousePosition(e.pageX, e.pageY, ctx);
-
   const rect = container.getBoundingClientRect();
-  const winH = rect.height - 20 * ctx.zoomRatio;
-  const winW = rect.width - 60 * ctx.zoomRatio;
+  const winH = rect.height - ctx.columnHeaderHeight * ctx.zoomRatio;
+  const winW = rect.width - ctx.rowHeaderWidth * ctx.zoomRatio;
 
   const { row: rowL, column } = getCellLocationByMouse(
     ctx,
@@ -119,7 +118,6 @@ export function onCellsMove(
   let [col_pre, col] = column;
   const row_index = rowL[2];
   const col_index = column[2];
-
   const row_index_original = ctx.luckysheet_cell_selected_move_index[0];
   const col_index_original = ctx.luckysheet_cell_selected_move_index[1];
   if (ctx.luckysheet_select_save == null) return;
