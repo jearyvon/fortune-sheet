@@ -2111,10 +2111,100 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     const tempFromRow = d[from];
     const toTempRow = d[to];
     if (checkMerge(tempFromRow) || checkMerge(toTempRow)) {
-      throw "移动项不能包含合并单元格"
+      throw new Error("移动项不能包含合并单元格")
+    }
+    let fromData = tempFromRow;
+    const tempRowLen = file.config?.rowlen ?? {};
+    let fromRowLenCopy = tempRowLen[from];
+    delete tempRowLen[from];
+    // console.log(JSON.stringify(file.config))
+    // let fromRowSize = file.config.
+    if (from < to) {
+      // 往后移
+      for (let index = from; index < to; index++) {
+        if (tempRowLen[index + 1]) {
+          tempRowLen[index] = tempRowLen[index + 1];
+        }
+        d[index] = d[index + 1];
+      }
+      d[to] = fromData;
+
+    } else {
+      // 往前移动
+      for (let index = from; index > to; index--) {
+        d[index] = d[index - 1];
+        if (tempRowLen[index - 1]) {
+          tempRowLen[index] = tempRowLen[index - 1];
+        }
+      }
+      d[to] = fromData;
+    }
+    // 修改行高
+    if (fromRowLenCopy) {
+      tempRowLen[to] = fromRowLenCopy;
+    }
+    if (file.config)
+      file.config['rowlen'] = tempRowLen;
+    console.log(JSON.stringify(tempRowLen))
+    // 修改选择范围
+    const select = ctx.luckysheet_select_save;
+    if (select?.[0]) {
+      const data = select[0]
+      ctx.luckysheet_select_save = [{ row: [to, to], column: data.column }];
     }
 
   } else {
+
+    const tempColLen = file.config?.columnlen ?? {};
+    let fromColLenCopy = tempColLen[from];
+    delete tempColLen[from];
+    for (let rowIdx = 0; rowIdx < d.length; rowIdx++) {
+      const rows = d[rowIdx];
+      if ((rows[from] && rows[from]?.mc) || rows[to] && rows[to]?.mc) {
+        throw new Error("移动项不能包含合并单元格")
+      }
+    }
+    if (from < to) {
+      for (let rIdx = 0; rIdx < d.length; rIdx++) {
+        const rows = d[rIdx];
+        const tempFrom = rows[from];
+        for (let cIdx = from; cIdx < to; cIdx++) {
+          if (tempColLen[cIdx + 1]) {
+            tempColLen[cIdx] = tempColLen[cIdx + 1];
+          }
+          rows[cIdx] = rows[cIdx + 1]
+        }
+        rows[to] = tempFrom;
+      }
+    } else {
+      console.log("from,to", from, to);
+      for (let rIdx = 0; rIdx < d.length; rIdx++) {
+        const rows = d[rIdx];
+        const tempFrom = rows[from];
+        for (let cIdx = from; to < cIdx; cIdx--) {
+          rows[cIdx] = rows[cIdx - 1]
+          if (tempColLen[cIdx - 1]) {
+            tempColLen[cIdx] = tempColLen[cIdx - 1];
+          }
+        }
+        rows[to] = tempFrom;
+      }
+    }
+
+    // 修改行高
+    if (fromColLenCopy) {
+      tempColLen[to] = fromColLenCopy;
+    }
+    if (file.config)
+      file.config['columnlen'] = tempColLen;
+    // 修改选择范围
+    const select = ctx.luckysheet_select_save;
+    if (select?.[0]) {
+      const data = select[0]
+      JSON.stringify(data);
+      ctx.luckysheet_select_save = [{ row: data.row, column: [to, to] }];
+    }
+
 
   }
 }

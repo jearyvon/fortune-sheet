@@ -24,6 +24,7 @@ import {
   createRangeHightlight,
   onCellsMoveEnd,
   onCellsMove,
+  exchangeRowOrColRank,
 } from "../modules";
 import { scrollToFrozenRowCol } from "../modules/freeze";
 import {
@@ -1746,15 +1747,26 @@ function mouseRender(
       const select = ctx.luckysheet_select_save?.[0];
       if (select?.column_select) {
         if (changeSizeLine) {
-          (changeSizeLine as HTMLDivElement).style.left = `${col - 1}px`;
+          if (select.column[0] > col_index) {
+            // 往前移动
+            (changeSizeLine as HTMLDivElement).style.left = `${col_pre - 1}px`;
+          } else {
+            (changeSizeLine as HTMLDivElement).style.left = `${col - 1}px`;
+          }
+
           (changeSizeLine as HTMLDivElement).style.top = `0px`;
           (changeSizeLine as HTMLDivElement).style.width = "0px";
           (changeSizeLine as HTMLDivElement).style.height = `${rect.height}px`;
         }
         return;
       } else if (select?.row_select) {
+        if (select.row[0] > row_index) {
+          // 往前移动
+          (changeSizeLine as HTMLDivElement).style.top = `${row_pre - 1}px`;
+        } else {
+          (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
+        }
         (changeSizeLine as HTMLDivElement).style.left = `0px`;
-        (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
         (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
         (changeSizeLine as HTMLDivElement).style.height = '0px';
         return;
@@ -3702,12 +3714,14 @@ export function handleOverlayMouseUp(
           console.log('没变了')
         } else {
           console.log('变1')
+          exchangeRowOrColRank(ctx, 'col', select.column[0], col_index);
         }
       } else if (select?.row_select) {
         if (select.row[0] == row_index) {
           console.log('没变了')
         } else {
           console.log('变1')
+          exchangeRowOrColRank(ctx, 'row', select.row[0], row_index);
         }
       }
     }
@@ -4623,14 +4637,11 @@ export function handleRowHeaderMouseDown(
 
   if (ctx.luckysheet_rank_move_status) {
     // console.log(JSON.stringify(ctx.luckysheet_select_save));
-    const changeSizeLine = container.querySelector(
+    const changeSizeLine = document.querySelector(
       ".fortune-rank-move-line"
     );
-    console.log(container);
     const select = ctx.luckysheet_select_save?.[0];
-    console.log('2222 mouseDown');
     if (select?.row_select) {
-
       (changeSizeLine as HTMLDivElement).style.left = `0px`;
       (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
       (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
