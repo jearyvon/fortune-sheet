@@ -19,6 +19,7 @@ import {
   inverseRowColOptions,
   PatchOptions,
   Sheet,
+  updateCell
 } from "@fortune-sheet/core";
 import produce, { applyPatches, Patch } from "immer";
 import _ from "lodash";
@@ -340,9 +341,19 @@ export function generateAPIs(
       });
     },
     freeTable: () => {
+      cellInput?.blur();
 
       setContext((draftCtx) => {
-        cellInput?.blur();
+        if (draftCtx.luckysheetCellUpdate.length > 0 && cellInput) {
+          updateCell(
+            draftCtx,
+            draftCtx.luckysheetCellUpdate[0],
+            draftCtx.luckysheetCellUpdate[1],
+            cellInput
+          );
+        }
+        draftCtx.luckysheet_select_save = [];
+        draftCtx.luckysheet_select_status = false;
         draftCtx.luckysheet_select_save = [];
       });
     }

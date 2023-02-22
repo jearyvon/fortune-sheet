@@ -25,7 +25,7 @@ import { isRealNull, isRealNum, valueIsError } from "./validation";
 export function normalizedCellAttr(
   cell: Cell,
   attr: keyof Cell,
-  defaultFontSize = 10
+  defaultFontSize = 14
 ): any {
   const tf = { bl: 1, it: 1, ff: 1, cl: 1, un: 1 };
   let value: any = cell?.[attr];
@@ -1155,9 +1155,8 @@ export function getRangetxt(
     return sheettxt + indexToColumnChar(column0) + (row0 + 1);
   }
 
-  return `${
-    sheettxt + indexToColumnChar(column0) + (row0 + 1)
-  }:${indexToColumnChar(column1)}${row1 + 1}`;
+  return `${sheettxt + indexToColumnChar(column0) + (row0 + 1)
+    }:${indexToColumnChar(column1)}${row1 + 1}`;
 }
 
 export function isAllSelectedCellsInStatus(

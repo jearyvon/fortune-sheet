@@ -52,7 +52,7 @@ function getTextSize(text: string, font: string) {
 }
 
 export function defaultFont(defaultFontSize: number) {
-  return `normal normal normal ${defaultFontSize}pt "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC",  "WenQuanYi Micro Hei", sans-serif`;
+  return `${defaultFontSize}px "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC",  "WenQuanYi Micro Hei", sans-serif`;
 }
 
 export function getFontSet(
@@ -82,12 +82,12 @@ export function getFontSet(
 
     // font-size/line-height
     if (!format.fs) {
-      fontAttr.push(`${defaultFontSize}pt`);
+      fontAttr.push(`${defaultFontSize}px`);
     } else {
-      fontAttr.push(`${Math.ceil(format.fs)}pt`);
+      fontAttr.push(`${Math.ceil(format.fs)}px`);
     }
 
-    let fontSet = `"Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif`;
+    let fontSet = `-apple-system, "PingFang SC", "Hiragino Sans GB", Arial, "Microsoft YaHei", "Helvetica Neue", sans-serif`;
     if (ctx) {
       const { fontarray } = locale(ctx);
       if (!format.ff) {
@@ -865,7 +865,7 @@ export function getCellTextInfo(
             textWidth += sc.measureText.width;
             textHeight = Math.max(
               sc.measureText.actualBoundingBoxAscent +
-                sc.measureText.actualBoundingBoxDescent
+              sc.measureText.actualBoundingBoxDescent
             );
             // console.log(sc.v,sc.measureText.width,sc.measureText.actualBoundingBoxAscent,sc.measureText.actualBoundingBoxDescent);
           }

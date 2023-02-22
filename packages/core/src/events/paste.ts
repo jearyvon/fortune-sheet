@@ -497,6 +497,9 @@ function pasteHandler(ctx: Context, data: any, borderInfo?: any) {
     //   selectHightlightShow();
     // }
   }
+  if (ctx.luckysheet_copy_save?.copyRange) {
+
+  }
 }
 
 function pasteHandlerOfCutPaste(
@@ -1400,12 +1403,16 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
       // for IE
       clipboardData = window.clipboardData;
     }
-
+    // if (ctx.luckysheet_copy_save?.copyRange != null && ctx.luckysheet_copy_save.copyRange.length > 0) {
+    //   pasteHandlerOfCopyPaste(ctx, ctx.luckysheet_copy_save);
+    //   return;
+    // }
     if (!clipboardData) return;
 
-    let txtdata =
-      clipboardData.getData("text/html") || clipboardData.getData("text/plain");
-
+    let txtdata = clipboardData.getData("text/html") ||
+      clipboardData.getData("text/plain");
+    // if (!txtdata) return;
+    // let txtdata = clipboardData.getData("text/html");
     // 如果标示是qksheet复制的内容，判断剪贴板内容是否是当前页面复制的内容
     let isEqual = true;
     if (
@@ -1413,93 +1420,16 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
       ctx.luckysheet_copy_save?.copyRange != null &&
       ctx.luckysheet_copy_save.copyRange.length > 0
     ) {
-      // 剪贴板内容解析
-      const cpDataArr = [];
 
-      const reg = /<tr.*?>(.*?)<\/tr>/g;
-      const reg2 = /<td.*?>(.*?)<\/td>/g;
+      const rangeCopy = txtdata.match(/data-range=\"(.*?)\"/);
+      const copyId = txtdata.match(/data-id=\"(.*?)\"/);
 
-      const regArr = txtdata.match(reg) || [];
-
-      for (let i = 0; i < regArr.length; i += 1) {
-        const cpRowArr = [];
-
-        const reg2Arr = regArr[i].match(reg2);
-
-        if (!_.isNil(reg2Arr)) {
-          for (let j = 0; j < reg2Arr.length; j += 1) {
-            const cpValue = reg2Arr[j]
-              .replace(/<td.*?>/g, "")
-              .replace(/<\/td>/g, "");
-            cpRowArr.push(cpValue);
-          }
-        }
-
-        cpDataArr.push(cpRowArr);
-      }
-
-      // 当前页面复制区内容
-      const copy_r1 = ctx.luckysheet_copy_save.copyRange[0].row[0];
-      const copy_r2 = ctx.luckysheet_copy_save.copyRange[0].row[1];
-      const copy_c1 = ctx.luckysheet_copy_save.copyRange[0].column[0];
-      const copy_c2 = ctx.luckysheet_copy_save.copyRange[0].column[1];
-
-      const copy_index = ctx.luckysheet_copy_save.dataSheetId;
-
-      let d;
-      if (copy_index === ctx.currentSheetId) {
-        d = getFlowdata(ctx);
-      } else {
-        const index = getSheetIndex(ctx, copy_index);
-        if (_.isNil(index)) return;
-        d = ctx.luckysheetfile[index].data;
-      }
-      if (!d) return;
-
-      for (let r = copy_r1; r <= copy_r2; r += 1) {
-        if (r - copy_r1 > cpDataArr.length - 1) {
-          break;
-        }
-
-        for (let c = copy_c1; c <= copy_c2; c += 1) {
-          const cell = d[r][c];
-          let isInlineStr = false;
-          if (!_.isNil(cell) && !_.isNil(cell.mc) && _.isNil(cell.mc.rs)) {
-            continue;
-          }
-
-          let v;
-          if (!_.isNil(cell)) {
-            if ((cell.ct?.fa?.indexOf("w") ?? -1) > -1) {
-              v = d[r]?.[c]?.v;
-            } else {
-              v = d[r]?.[c]?.m;
-            }
-          } else {
-            v = "";
-          }
-
-          if (_.isNil(v) && d[r]?.[c]?.ct?.t === "inlineStr") {
-            v = d[r]![c]!.ct!.s!.map((val: any) => val.v).join("");
-            isInlineStr = true;
-          }
-          if (_.isNil(v)) {
-            v = "";
-          }
-          if (isInlineStr) {
-            // const cpData = $(cpDataArr[r - copy_r1][c - copy_c1])
-            //   .text()
-            //   .replace(/\s|\n/g, " ");
-            // const ctx.alue = v.replace(/\n/g, "").replace(/\s/g, " ");
-            // if (cpData !== ctx.alue) {
-            //   isEqual = false;
-            //   break;
-            // }
-          } else {
-            if (_.trim(cpDataArr[r - copy_r1][c - copy_c1]) !== _.trim(v)) {
-              isEqual = false;
-              break;
-            }
+      if (rangeCopy && rangeCopy[1] && copyId && copyId[1]) {
+        let copySelect = JSON.parse(window.atob(rangeCopy[1]));
+        isEqual = false;
+        if (copyId[1] === ctx.currentSheetId) {
+          if (ctx.luckysheet_copy_save.copyRange[0].row[0] == copySelect[0].row[0] && ctx.luckysheet_copy_save.copyRange[0].column[0] == copySelect[0].column[0]) {
+            isEqual = true;
           }
         }
       }

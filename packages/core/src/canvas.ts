@@ -660,7 +660,6 @@ export class Canvas {
     );
     renderCtx.font = defaultFont(this.sheetCtx.defaultFontSize);
     renderCtx.fillStyle = defaultStyle.fillStyle;
-
     // 表格渲染区域 非空单元格行列 起止坐标
     const cellupdate: {
       r: number;
@@ -2411,8 +2410,8 @@ export class Canvas {
     this.cellTextRender(textInfo, renderCtx, {
       pos_x,
       pos_y,
+      radio: cell?.radio
     });
-
     renderCtx.restore();
   }
 
@@ -2585,6 +2584,7 @@ export class Canvas {
     if (checked) {
       renderCtx.fillStyle = "#767676";
       renderCtx.fill();
+      renderCtx.fillStyle = "#000000";
     } else {
       renderCtx.strokeStyle = "#767676";
       renderCtx.stroke();
@@ -2611,7 +2611,7 @@ export class Canvas {
 
     // ctx.fillStyle = "rgba(255,255,0,0.2)";
     // ctx.fillRect((pos_x + values[0].left)/this.sheetCtx.zoomRatio, (pos_y+values[0].top-values[0].asc)/this.sheetCtx.zoomRatio, textInfo.textWidthAll, textInfo.textHeightAll)
-
+    console.log(textInfo)
     if (textInfo.rotate !== 0 && textInfo.type !== "verticalWrap") {
       ctx.save();
       ctx.translate(
@@ -2629,24 +2629,19 @@ export class Canvas {
       x: 0,
       y: 0
     }
+    ctx.imageSmoothingEnabled = false;
+    let splitIndex = -1;
+    let multiLine = values.length > 1;
     for (let i = 0; i < values.length; i += 1) {
       const word = values[i];
-      let paddingLeft20 = false;
-      if (i === 0 && radio && values.length === 1) {
-        radioPos.x = (pos_x + word.left) / this.sheetCtx.zoomRatio;
-        radioPos.y = (pos_y + word.top - word.height) / this.sheetCtx.zoomRatio;
-        this.cellRadioRender(Boolean(Number(radio)), ctx, radioPos.x, radioPos.y);
-        paddingLeft20 = true;
+      if (radio) {
+        word.left += 20;
       }
       if (word.inline === true && word.style) {
         ctx.font = word.style.fontset;
-        ctx.fillStyle = word.style.fc;
+        ctx.fillStyle = '#000000';
       } else {
         ctx.font = word.style;
-      }
-
-      if (paddingLeft20) {
-        word.left += 20;
       }
       // 暂时未排查到word.content第一次会是object，先做下判断来渲染，后续找到问题再复原
       const txt = _.isPlainObject(word.content) ? word.content.m : word.content;
@@ -2698,6 +2693,23 @@ export class Canvas {
     if (textInfo.rotate !== 0 && textInfo.type !== "verticalWrap") {
       ctx.restore();
     }
+    if (radio) {
+      let textLeftPadding = textInfo.textLeftAll;
+      let textTopPadding = textInfo.textTopAll;
+      let textHeight = textInfo.textHeightAll;
+      if (!textTopPadding) {
+        //多行的
+        textHeight = values[0].height;
+        textTopPadding = (values[values.length - 1].top + values[0].top) / 2;
+      }
+      if (!textLeftPadding) {
+        textLeftPadding = values[0].left - 20;
+      }
+      radioPos.x = (pos_x + textLeftPadding) / this.sheetCtx.zoomRatio;
+      radioPos.y = (pos_y + textTopPadding - textHeight) / this.sheetCtx.zoomRatio;
+      this.cellRadioRender(Boolean(Number(radio)), ctx, radioPos.x, radioPos.y);
+    }
+
   }
 
   drawFreezeLine({

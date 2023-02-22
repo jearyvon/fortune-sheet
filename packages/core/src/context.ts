@@ -282,7 +282,7 @@ export function defaultContext(): Context {
     allowEdit: true,
 
     fontList: [],
-    defaultFontSize: 10,
+    defaultFontSize: 14,
 
     luckysheetPaintModelOn: false,
     luckysheetPaintSingle: false,

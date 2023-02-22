@@ -1043,7 +1043,6 @@ export function rangeValueToHtml(
       if (cell != null) {
         let style = "";
         let span = "";
-
         if (r === rowIndexArr[0]) {
           if (
             _.isNil(sheet.config) ||
@@ -1424,7 +1423,7 @@ export function rangeValueToHtml(
     cpdata += "</tr>";
   }
 
-  return `<table data-type="fortune-copy-action-table">${colgroup}${cpdata}</table>`;
+  return `<table data-type="fortune-copy-action-table" data-id="${sheetId}" data-range='${window.btoa(JSON.stringify(ranges))}'>${colgroup}${cpdata}</table>`;
 }
 
 export function copy(ctx: Context) {
@@ -1494,7 +1493,7 @@ export function copy(ctx: Context) {
     ctx.currentSheetId,
     ctx.luckysheet_select_save
   );
-
+  console.log(JSON.stringify(copyRange));
   if (cpdata) {
     ctx.iscopyself = true;
     clipboard.writeHtml(cpdata);

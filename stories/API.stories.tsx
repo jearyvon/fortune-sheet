@@ -50,8 +50,8 @@ export const GetCellValue: ComponentStory<typeof Workbook> = () => {
       name: "Sheet1",
       celldata: [{ r: 0, c: 0, v: { v: "fortune" } }],
       order: 0,
-      row: 1,
-      column: 1,
+      row: 10,
+      column: 10,
     },
   ]);
   const onChange = useCallback((d: Sheet[]) => {
@@ -60,7 +60,8 @@ export const GetCellValue: ComponentStory<typeof Workbook> = () => {
   return (
     <ApiExecContainer
       onRun={() => {
-        return ref.current?.getCellValue(0, 0);
+        // return ref.current?.getCellValue(0, 0);
+        ref.current?.freeTable();
       }}
     >
       <Workbook ref={ref} data={data} onChange={onChange} />

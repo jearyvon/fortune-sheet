@@ -66,6 +66,7 @@ import {
   onSearchDialogMove,
   onSearchDialogMoveEnd,
 } from "../modules/searchReplace";
+import { autoSetWidthHeight } from "../api";
 
 let mouseWheelUniqueTimeout: ReturnType<typeof setTimeout>;
 
@@ -293,9 +294,12 @@ export function handleCellAreaMouseDown(
         cellInput
       );
     }
+    autoSetWidthHeight(ctx);
+
     ctx.luckysheet_select_save = [];
     ctx.luckysheet_select_status = false;
     // ctx.luckysheetCellUpdate = [];
+
     e.preventDefault();
     e.stopPropagation();
     return;
@@ -3708,19 +3712,12 @@ export function handleOverlayMouseUp(
       const col_pre = col_location[0];
       const col_index = col_location[2];
       const select = ctx.luckysheet_select_save?.[0];
-      console.log(JSON.stringify(select));
       if (select?.column_select) {
-        if (select.column[0] == col_index) {
-          console.log('没变了')
-        } else {
-          console.log('变1')
+        if (select.column[0] !== col_index) {
           exchangeRowOrColRank(ctx, 'col', select.column[0], col_index);
         }
       } else if (select?.row_select) {
-        if (select.row[0] == row_index) {
-          console.log('没变了')
-        } else {
-          console.log('变1')
+        if (select.row[0] !== row_index) {
           exchangeRowOrColRank(ctx, 'row', select.row[0], row_index);
         }
       }

@@ -115,6 +115,7 @@ const ColumnHeader: React.FC = () => {
   const onColChangeRankMoveDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const { nativeEvent } = e;
+      if (nativeEvent.button !== 0) return;
       setContext((draftCtx) => {
         draftCtx.luckysheet_rank_move_status = true;
       })

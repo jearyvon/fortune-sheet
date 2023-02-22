@@ -908,15 +908,7 @@
   cursor:grab;
   z-index: 999;
 }
-
-/* .fortune-cols-change-col-rank-line{
-  position: absolute;
-  display: block;
-  background-color: #f9086c;
-  right: 2px;
-  top: 0;
-  cursor:grab;
-  height: 400px;
-  width: 4px;
-  z-index: 999;
-} */
+#luckysheet-rich-text-editor{
+  font-size: 14px;
+  font-family: "Times New Roman",-apple-system, "PingFang SC", "Hiragino Sans GB", Arial, "Microsoft YaHei", "Helvetica Neue", sans-serif;
+}
