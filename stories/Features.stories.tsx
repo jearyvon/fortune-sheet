@@ -18,7 +18,7 @@ const Template: ComponentStory<typeof Workbook> = ({
 }) => {
   const [data, setData] = useState<Sheet[]>(data0);
   const onChange = useCallback((d: Sheet[]) => {
-    // setData(d);
+    setData(d);
   }, []);
   return (
     <div style={{ width: "100%", height: "100%" }}>

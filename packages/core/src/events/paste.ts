@@ -1414,19 +1414,19 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
     // if (!txtdata) return;
     // let txtdata = clipboardData.getData("text/html");
     // 如果标示是qksheet复制的内容，判断剪贴板内容是否是当前页面复制的内容
-    let isEqual = true;
+    let isEqual = false;
     if (
       txtdata.indexOf("fortune-copy-action-table") > -1 &&
       ctx.luckysheet_copy_save?.copyRange != null &&
       ctx.luckysheet_copy_save.copyRange.length > 0
     ) {
-
+      isEqual = false;
       const rangeCopy = txtdata.match(/data-range=\"(.*?)\"/);
       const copyId = txtdata.match(/data-id=\"(.*?)\"/);
 
       if (rangeCopy && rangeCopy[1] && copyId && copyId[1]) {
         let copySelect = JSON.parse(window.atob(rangeCopy[1]));
-        isEqual = false;
+
         if (copyId[1] === ctx.currentSheetId) {
           if (ctx.luckysheet_copy_save.copyRange[0].row[0] == copySelect[0].row[0] && ctx.luckysheet_copy_save.copyRange[0].column[0] == copySelect[0].column[0]) {
             isEqual = true;
@@ -1461,7 +1461,7 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
     } else if (txtdata.indexOf("fortune-copy-action-image") > -1) {
       // imageCtrl.pasteImgItem();
     } else {
-      if (txtdata.indexOf("table") > -1) {
+      if (txtdata.indexOf("table") > -1 && txtdata.indexOf("fortune-copy-action-table") === -1) {
         const ele = document.createElement("div");
         ele.innerHTML = txtdata;
 

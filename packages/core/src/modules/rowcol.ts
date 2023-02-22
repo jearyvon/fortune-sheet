@@ -2116,7 +2116,9 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     let fromData = tempFromRow;
     const tempRowLen = file.config?.rowlen ?? {};
     let fromRowLenCopy = tempRowLen[from];
+    console.log(JSON.stringify(tempRowLen));
     delete tempRowLen[from];
+    console.log(JSON.stringify(fromRowLenCopy));
     // console.log(JSON.stringify(file.config))
     // let fromRowSize = file.config.
     if (from < to) {
@@ -2143,9 +2145,9 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     if (fromRowLenCopy) {
       tempRowLen[to] = fromRowLenCopy;
     }
+    console.log(JSON.stringify(tempRowLen));
     if (file.config)
       file.config['rowlen'] = tempRowLen;
-    console.log(JSON.stringify(tempRowLen))
     // 修改选择范围
     const select = ctx.luckysheet_select_save;
     if (select?.[0]) {
