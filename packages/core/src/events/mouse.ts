@@ -283,19 +283,22 @@ export function handleCellAreaMouseDown(
   if (x >= rect.width + ctx.scrollLeft || y >= rect.height + ctx.scrollTop) {
     return;
   }
+
+  if (ctx.luckysheetCellUpdate.length > 0 && cellInput) {
+    updateCell(
+      ctx,
+      ctx.luckysheetCellUpdate[0],
+      ctx.luckysheetCellUpdate[1],
+      cellInput
+    );
+    autoSetWidthHeight(ctx, cellInput);
+  }
+
+
   const freeze = globalCache.freezen?.[ctx.currentSheetId];
   [x, y] = fixPositionOnFrozenCells(freeze, x, y, mouseX, mouseY);
-  if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
-    if (ctx.luckysheetCellUpdate.length > 0 && cellInput) {
-      updateCell(
-        ctx,
-        ctx.luckysheetCellUpdate[0],
-        ctx.luckysheetCellUpdate[1],
-        cellInput
-      );
-    }
-    autoSetWidthHeight(ctx);
 
+  if (y > (_.last(ctx.visibledatarow) || 0) || x > (_.last(ctx.visibledatacolumn) || 0)) {
     ctx.luckysheet_select_save = [];
     ctx.luckysheet_select_status = false;
     // ctx.luckysheetCellUpdate = [];

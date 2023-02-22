@@ -2611,7 +2611,6 @@ export class Canvas {
 
     // ctx.fillStyle = "rgba(255,255,0,0.2)";
     // ctx.fillRect((pos_x + values[0].left)/this.sheetCtx.zoomRatio, (pos_y+values[0].top-values[0].asc)/this.sheetCtx.zoomRatio, textInfo.textWidthAll, textInfo.textHeightAll)
-    console.log(textInfo)
     if (textInfo.rotate !== 0 && textInfo.type !== "verticalWrap") {
       ctx.save();
       ctx.translate(
