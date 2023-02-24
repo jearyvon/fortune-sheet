@@ -97,6 +97,7 @@ export type Context = {
     copyRange: { row: number[]; column: number[] }[];
     RowlChange: boolean;
     HasMC: boolean;
+    cacheData?: any;
   }; // 复制粘贴
   luckysheet_paste_iscut: boolean;
 

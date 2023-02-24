@@ -16,7 +16,7 @@ import { GlobalCache } from "../types";
 import { getNowDateTime } from "../utils";
 import { handleCopy } from "./copy";
 import { jfrefreshgrid } from "../modules/refresh";
-import { autoSetWidthHeight } from "../api";
+import { autoSetWidthHeight, clearCell } from "../api";
 
 export function handleGlobalEnter(
   ctx: Context,
@@ -264,7 +264,16 @@ export function handleWithCtrlOrMetaKey(
 
     ctx.luckysheet_paste_iscut = true;
     // luckysheetactiveCell();
-
+    const { copyRange } = ctx.luckysheet_copy_save!;
+    if (copyRange && copyRange[0]) {
+      const [rowS, rowE] = copyRange[0].row;
+      const [colS, colE] = copyRange[0].column;
+      for (let rIdx = rowS; rIdx <= rowE; rIdx++) {
+        for (let cIdx = colS; cIdx <= colE; cIdx++) {
+          clearCell(ctx, rIdx, cIdx, { id: ctx.currentSheetId });
+        }
+      }
+    }
     e.stopPropagation();
     return;
   } else if (e.key === "z") {

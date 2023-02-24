@@ -1485,15 +1485,23 @@ export function copy(ctx: Context) {
     });
     copyRange.push({ row: range.row, column: range.column });
   }
-
+  const c_r1 = copyRange[0].row[0];
+  const c_r2 = copyRange[0].row[1];
+  const c_c1 = copyRange[0].column[0];
+  const c_c2 = copyRange[0].column[1];
   // selectionCopyShow();
-
+  const copyCells = _.cloneDeep(getdatabyselection(
+    ctx,
+    { row: [c_r1, c_r2], column: [c_c1, c_c2] },
+    ctx.currentSheetId
+  ));
   // luckysheet内copy保存
   ctx.luckysheet_copy_save = {
     dataSheetId: ctx.currentSheetId,
     copyRange,
     RowlChange,
     HasMC,
+    cacheData: copyCells
   };
 
   const cpdata = rangeValueToHtml(
@@ -1501,7 +1509,6 @@ export function copy(ctx: Context) {
     ctx.currentSheetId,
     ctx.luckysheet_select_save
   );
-  console.log(JSON.stringify(copyRange));
   if (cpdata) {
     ctx.iscopyself = true;
     clipboard.writeHtml(cpdata);
@@ -1808,4 +1815,8 @@ export function calcSelectionInfo(ctx: Context) {
   max = SSF.format("w0.00", max);
   min = SSF.format("w0.00", min);
   return { numberC, count, sum, max, min, average };
+}
+
+export function clearcopy() {
+  clipboard.writeHtml('');
 }

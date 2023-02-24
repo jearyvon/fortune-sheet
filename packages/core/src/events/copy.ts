@@ -122,6 +122,5 @@ export function handleCopy(ctx: Context) {
   }
 
   copy(ctx);
-
   ctx.luckysheet_paste_iscut = false;
 }

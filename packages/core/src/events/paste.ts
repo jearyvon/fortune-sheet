@@ -9,7 +9,7 @@ import {
 } from "../modules/formula";
 import { getdatabyselection, getQKBorder } from "../modules/cell";
 import { genarate, update } from "../modules/format";
-import { selectionCache } from "../modules/selection";
+import { clearcopy, selectionCache } from "../modules/selection";
 import { Cell, CellMatrix } from "../types";
 import { getSheetIndex } from "../utils";
 import { hasPartMC, isRealNum } from "../modules/validation";
@@ -541,14 +541,14 @@ function pasteHandlerOfCutPaste(
   const c_c1 = copyRange.copyRange[0].column[0];
   const c_c2 = copyRange.copyRange[0].column[1];
 
-  const copyData = _.cloneDeep(
-    getdatabyselection(
-      ctx,
-      { row: [c_r1, c_r2], column: [c_c1, c_c2] },
-      copySheetId
-    )
-  );
-
+  // const copyData = _.cloneDeep(
+  //   getdatabyselection(
+  //     ctx,
+  //     { row: [c_r1, c_r2], column: [c_c1, c_c2] },
+  //     copySheetId
+  //   )
+  // );
+  const copyData = _.cloneDeep(copyRange.cacheData);
   const copyh = copyData.length;
   const copyc = copyData[0].length;
 
@@ -1040,6 +1040,9 @@ function pasteHandlerOfCutPaste(
   }
 
   syncRowColumnNum(ctx);
+
+  ctx.luckysheet_copy_save = undefined;
+  clearcopy();
 }
 
 function pasteHandlerOfCopyPaste(
@@ -1074,50 +1077,50 @@ function pasteHandlerOfCopyPaste(
   const c_c1 = copyRange.copyRange[0].column[0];
   const c_c2 = copyRange.copyRange[0].column[1];
 
-  let arr: CellMatrix = [];
-  let isSameRow = false;
-  for (let i = 0; i < copyRange.copyRange.length; i += 1) {
-    let arrData = getdatabyselection(
-      ctx,
-      {
-        row: copyRange.copyRange[i].row,
-        column: copyRange.copyRange[i].column,
-      },
-      copySheetIndex
-    );
+  let arr: CellMatrix = copyRange.cacheData;
+  let isSameRow = copyRange;
+  // for (let i = 0; i < copyRange.copyRange.length; i += 1) {
+  //   let arrData = getdatabyselection(
+  //     ctx,
+  //     {
+  //       row: copyRange.copyRange[i].row,
+  //       column: copyRange.copyRange[i].column,
+  //     },
+  //     copySheetIndex
+  //   );
 
-    if (copyRange.copyRange.length > 1) {
-      if (
-        c_r1 === copyRange.copyRange[1].row[0] &&
-        c_r2 === copyRange.copyRange[1].row[1]
-      ) {
-        arrData = arrData[0].map((col, a) => {
-          return arrData.map((row) => {
-            return row[a];
-          });
-        });
+  //   if (copyRange.copyRange.length > 1) {
+  //     if (
+  //       c_r1 === copyRange.copyRange[1].row[0] &&
+  //       c_r2 === copyRange.copyRange[1].row[1]
+  //     ) {
+  //       arrData = arrData[0].map((col, a) => {
+  //         return arrData.map((row) => {
+  //           return row[a];
+  //         });
+  //       });
 
-        arr = arr.concat(arrData);
+  //       arr = arr.concat(arrData);
 
-        isSameRow = true;
-      } else if (
-        c_c1 === copyRange.copyRange[1].column[0] &&
-        c_c2 === copyRange.copyRange[1].column[1]
-      ) {
-        arr = arr.concat(arrData);
-      }
-    } else {
-      arr = arrData;
-    }
-  }
+  //       isSameRow = true;
+  //     } else if (
+  //       c_c1 === copyRange.copyRange[1].column[0] &&
+  //       c_c2 === copyRange.copyRange[1].column[1]
+  //     ) {
+  //       arr = arr.concat(arrData);
+  //     }
+  //   } else {
+  //     arr = arrData;
+  //   }
+  // }
 
-  if (isSameRow) {
-    arr = arr[0].map((col, b) => {
-      return arr.map((row) => {
-        return row[b];
-      });
-    });
-  }
+  // if (isSameRow) {
+  //   arr = arr[0].map((col, b) => {
+  //     return arr.map((row) => {
+  //       return row[b];
+  //     });
+  //   });
+  // }
 
   const copyData = _.cloneDeep(arr);
   // 多重选择选择区域 单元格如果有函数 则只取值 不取函数
@@ -1522,7 +1525,7 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
         ctx.luckysheet_paste_iscut = false;
         pasteHandlerOfCutPaste(ctx, ctx.luckysheet_copy_save);
         ctx.luckysheet_selection_range = [];
-        // selection.clearcopy(e);
+
       } else {
         pasteHandlerOfCopyPaste(ctx, ctx.luckysheet_copy_save);
       }
