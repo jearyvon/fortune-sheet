@@ -285,6 +285,15 @@ export function handleCellAreaMouseDown(
   }
 
   if (ctx.luckysheetCellUpdate.length > 0 && cellInput) {
+    const rowLen = flowdata.length;
+    const colLen = flowdata[0].length;
+    if (rowLen < ctx.luckysheetCellUpdate[0] || colLen < ctx.luckysheetCellUpdate[1]) {
+      console.error('意料之外的点击');
+      ctx.luckysheet_copy_save = undefined;
+      ctx.luckysheet_select_save = undefined;
+      ctx.luckysheetCellUpdate = [];
+      return;
+    }
     updateCell(
       ctx,
       ctx.luckysheetCellUpdate[0],

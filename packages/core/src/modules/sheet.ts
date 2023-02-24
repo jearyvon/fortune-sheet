@@ -116,16 +116,16 @@ export function addSheet(
   }
   const sheetconfig: Sheet = _.isNil(sheetData)
     ? {
-        name: sheetName === undefined ? sheetname : sheetName,
-        status: 0,
-        order,
-        id,
-        row: ctx.defaultrowNum,
-        column: ctx.defaultcolumnNum,
-        config: {},
-        pivotTable: null,
-        isPivotTable: !!isPivotTable,
-      }
+      name: sheetName === undefined ? sheetname : sheetName,
+      status: 0,
+      order,
+      id,
+      row: ctx.defaultrowNum,
+      column: ctx.defaultcolumnNum,
+      config: {},
+      pivotTable: null,
+      isPivotTable: !!isPivotTable,
+    }
     : sheetData;
   if (sheetName !== undefined) sheetconfig.name = sheetName;
   if (sheetconfig.id === undefined) sheetconfig.id = uuidv4();
@@ -228,6 +228,9 @@ export function updateSheet(ctx: Context, newData: Sheet[]) {
     } else if (newDatum.celldata != null) {
       initSheetData(ctx, index, newDatum);
     }
+    ctx.luckysheet_copy_save = undefined;
+    ctx.luckysheet_select_save = undefined;
+    ctx.luckysheetCellUpdate = [];
   });
 }
 

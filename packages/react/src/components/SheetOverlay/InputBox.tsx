@@ -31,7 +31,6 @@ import ContentEditable from "./ContentEditable";
 import FormulaSearch from "./FormulaSearch";
 import FormulaHint from "./FormulaHint";
 import usePrevious from "../../hooks/usePrevious";
-import { autoSetWidthHeight } from "packages/core/src/api";
 
 const InputBox: React.FC = () => {
   const { context, setContext, refs } = useContext(WorkbookContext);
@@ -49,11 +48,15 @@ const InputBox: React.FC = () => {
     if (firstSelection && context.luckysheetCellUpdate.length > 0) {
       const flowdata = getFlowdata(context);
       if (!flowdata) return {};
-      return getStyleByCell(
-        flowdata,
-        firstSelection.row_focus!,
-        firstSelection.column_focus!
-      );
+      try {
+        return getStyleByCell(
+          flowdata,
+          firstSelection.row_focus!,
+          firstSelection.column_focus!
+        );
+      } catch (error) {
+        return {};
+      }
     }
     return {};
     // eslint-disable-next-line react-hooks/exhaustive-deps

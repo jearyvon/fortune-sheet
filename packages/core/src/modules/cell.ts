@@ -688,7 +688,9 @@ export function updateCell(
     }
   }
   */
-
+  if (!flowdata[r]) {
+    return;
+  }
   let curv = flowdata[r][c];
 
   // ctx.old value for hook function
