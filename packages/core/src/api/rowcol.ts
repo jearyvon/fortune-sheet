@@ -204,11 +204,11 @@ export function autoSetWidthHeight(ctx: Context, input?: HTMLDivElement | null) 
   const sheet = getSheet(ctx, {});
   const select = ctx.luckysheet_select_save?.[0];
   // const input = document.getElementById('luckysheet-rich-text-editor')
-  // console.log(input);
+
   if (select && input) {
     const height = select.height ?? ctx.columnHeaderHeight;
     const rect = input.getBoundingClientRect();
-    if (rect.height + 2 > height && select.row_focus) {
+    if (rect.height + 2 > height && select.row_focus != undefined) {
       const cellRow: Record<string, number> = {}
       cellRow[select.row_focus] = rect.height + 4;
       setRowHeight(ctx, cellRow);

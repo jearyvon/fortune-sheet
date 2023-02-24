@@ -1,5 +1,6 @@
 import { Context, getFlowdata } from "../context";
 import { CellMatrix, Selection } from "../types";
+import { getSheetIndex } from "../utils";
 import { execFunctionGroup } from "./formula";
 
 function runExecFunction(
@@ -67,4 +68,18 @@ export function jfrefreshgrid(
 
   /* 选区同步 */
   // selectHightlightShow();
+}
+
+
+export function syncRowColumnNum(ctx: Context) {
+  const data = getFlowdata(ctx)!;
+  if (data) {
+    const rowNum = data.length;
+    const colNum = data[0].length;
+    const sheetIndex = getSheetIndex(ctx, ctx.currentSheetId);
+    if (sheetIndex !== null) {
+      ctx.luckysheetfile[sheetIndex].row = rowNum;
+      ctx.luckysheetfile[sheetIndex].column = colNum;
+    }
+  }
 }

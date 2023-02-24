@@ -107,6 +107,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
             d[index!].data = expandedData;
             d[index!].row = lastRowNum;
             d[index!].column = lastColNum;
+        
             delete d[index!].celldata;
             return d;
           });
@@ -385,6 +386,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
           draftCtx.defaultcolumnNum = mergedSettings.column;
           draftCtx.defaultrowNum = mergedSettings.row;
           draftCtx.defaultFontSize = mergedSettings.defaultFontSize;
+          draftCtx.allowMerge = mergedSettings.allowMerge;
           draftCtx.rowHeaderWidth = mergedSettings.rowHeaderWidth || 1.5;
           draftCtx.columnHeaderHeight =
             mergedSettings.columnHeaderHeight || 1.5;
@@ -625,7 +627,7 @@ const Workbook = React.forwardRef<WorkbookInstance, Settings & AdditionalProps>(
                   setMoreItems={setMoreToolbarItems}
                 />
               )}
-              {mergedSettings.showFormulaBar && <FxEditor />}
+              {/* {mergedSettings.showFormulaBar && <FxEditor />} */}
             </div>
             <Sheet sheet={sheet} />
             {mergedSettings.showSheetTabs && <SheetTab />}

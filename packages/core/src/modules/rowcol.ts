@@ -2096,9 +2096,9 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
   if (!file) return;
   const d = file.data;
   if (!d) return;
-
+  // const cfg = file.config;
   function checkMerge(data: (Cell | null)[]): boolean {
-
+    if (!data) return false;
     for (let index = 0; index < data.length; index++) {
       const element = data[index];
       if (element && element.mc) {
@@ -2111,23 +2111,23 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     const tempFromRow = d[from];
     const toTempRow = d[to];
     if (checkMerge(tempFromRow) || checkMerge(toTempRow)) {
+      ctx.luckysheet_select_status = false;
+      ctx.luckysheet_scroll_status = false;
       throw new Error("移动项不能包含合并单元格")
     }
     let fromData = tempFromRow;
     const tempRowLen = file.config?.rowlen ?? {};
     let fromRowLenCopy = tempRowLen[from];
-    console.log(JSON.stringify(tempRowLen));
     delete tempRowLen[from];
-    console.log(JSON.stringify(fromRowLenCopy));
-    // console.log(JSON.stringify(file.config))
-    // let fromRowSize = file.config.
     if (from < to) {
       // 往后移
+
       for (let index = from; index < to; index++) {
         if (tempRowLen[index + 1]) {
           tempRowLen[index] = tempRowLen[index + 1];
         }
         d[index] = d[index + 1];
+
       }
       d[to] = fromData;
 
@@ -2145,9 +2145,35 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     if (fromRowLenCopy) {
       tempRowLen[to] = fromRowLenCopy;
     }
-    console.log(JSON.stringify(tempRowLen));
     if (file.config)
       file.config['rowlen'] = tempRowLen;
+    // 修改合并单元格相关的
+    const mergeData: Record<string, any> = {};
+    const oldMergeMap: Record<string, { r: number, c: number }> = {};
+    for (let rIdx = 0; rIdx < d.length; rIdx++) {
+      const cols = d[rIdx];
+      for (let cIdx = 0; cIdx < cols.length; cIdx++) {
+        const cell = cols[cIdx];
+        if (cell && cell.mc) {
+          // 新的key
+          const oldKey = `${cell.mc.r}_${cell.mc.c}`;
+          if (oldMergeMap[oldKey]) {
+            cell.mc = oldMergeMap[oldKey];
+          } else {
+            const key = `${rIdx}_${cIdx}`;
+            if (cell.mc.rs && cell.mc.cs) {
+              mergeData[key] = { r: rIdx, c: cIdx, rs: cell.mc.rs, cs: cell.mc.cs };
+              cell.mc = mergeData[key];
+              oldMergeMap[oldKey] = { r: rIdx, c: cIdx };
+            }
+
+          }
+        }
+      }
+    }
+    if (file.config) {
+      file.config.merge = mergeData;
+    }
     // 修改选择范围
     const select = ctx.luckysheet_select_save;
     if (select?.[0]) {
@@ -2163,6 +2189,8 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     for (let rowIdx = 0; rowIdx < d.length; rowIdx++) {
       const rows = d[rowIdx];
       if ((rows[from] && rows[from]?.mc) || rows[to] && rows[to]?.mc) {
+        ctx.luckysheet_select_status = false;
+        ctx.luckysheet_scroll_status = false;
         throw new Error("移动项不能包含合并单元格")
       }
     }

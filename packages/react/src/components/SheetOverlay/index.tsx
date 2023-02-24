@@ -56,14 +56,18 @@ const SheetOverlay: React.FC = () => {
       if (e.button !== 2) {
         // onContextMenu event will not call onMouseDown
         setContext((draftCtx) => {
-          handleCellAreaMouseDown(
-            draftCtx,
-            refs.globalCache,
-            nativeEvent,
-            refs.cellInput.current!,
-            refs.cellArea.current!,
-            refs.fxInput.current!
-          );
+          try {
+            handleCellAreaMouseDown(
+              draftCtx,
+              refs.globalCache,
+              nativeEvent,
+              refs.cellInput.current!,
+              refs.cellArea.current!,
+              refs.fxInput.current!
+            );
+          } catch (error) {
+            console.log(error);
+          }
         });
       }
     },
@@ -91,13 +95,17 @@ const SheetOverlay: React.FC = () => {
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const { nativeEvent } = e;
       setContext((draftCtx) => {
-        handleCellAreaDoubleClick(
-          draftCtx,
-          refs.globalCache,
-          settings,
-          nativeEvent,
-          refs.cellArea.current!
-        );
+        try {
+          handleCellAreaDoubleClick(
+            draftCtx,
+            refs.globalCache,
+            settings,
+            nativeEvent,
+            refs.cellArea.current!
+          );
+        } catch (error) {
+          console.error(error);
+        }
       });
     },
     [refs.cellArea, refs.globalCache, setContext, settings]
@@ -456,7 +464,7 @@ const SheetOverlay: React.FC = () => {
             }
             onMouseDown={(e) => e.preventDefault()}
           />
-          {(context.luckysheet_selection_range?.length ?? 0) > 0 && (
+          {/* {(context.luckysheet_selection_range?.length ?? 0) > 0 && (
             <div id="fortune-selection-copy">
               {context.luckysheet_selection_range!.map((range) => {
                 const r1 = range.row[0];
@@ -491,7 +499,7 @@ const SheetOverlay: React.FC = () => {
                 );
               })}
             </div>
-          )}
+          )} */}
           <div id="luckysheet-chart-rangeShow" />
           <div className="fortune-cell-selected-extend" />
           <div

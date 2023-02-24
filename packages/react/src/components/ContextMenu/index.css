@@ -60,7 +60,7 @@
 
 .luckysheet-cols-menu .luckysheet-cols-menuitem .luckysheet-cols-menuitem-content {
   position: relative;
-  color: #333;
+  color: #111;
   cursor: pointer;
   list-style: none;
   margin: 0;
@@ -291,6 +291,7 @@
  text-align: right;
  float: right;
  font-size: 12px;
+ margin-top: 8px;
 }
 .luckysheet-cols-menuitem-content .shortcut-icon .command-icon{
   font-size: 16px;

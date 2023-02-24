@@ -18,10 +18,11 @@ const Template: ComponentStory<typeof Workbook> = ({
 }) => {
   const [data, setData] = useState<Sheet[]>(data0);
   const onChange = useCallback((d: Sheet[]) => {
+    console.log(d[0].row,d[0].column)
     setData(d);
   }, []);
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%" }} className="test-main-box">
       <Workbook {...args} data={data} onChange={onChange} />
     </div>
   );

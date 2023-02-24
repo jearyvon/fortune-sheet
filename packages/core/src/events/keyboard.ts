@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { hideCRCount, removeActiveImage } from "..";
 import { Context, getFlowdata } from "../context";
-import { updateCell, cancelNormalSelected } from "../modules/cell";
+import { updateCell, cancelNormalSelected, luckysheetUpdateCell } from "../modules/cell";
 import { handleFormulaInput } from "../modules/formula";
 import {
   copy,
@@ -16,6 +16,7 @@ import { GlobalCache } from "../types";
 import { getNowDateTime } from "../utils";
 import { handleCopy } from "./copy";
 import { jfrefreshgrid } from "../modules/refresh";
+import { autoSetWidthHeight } from "../api";
 
 export function handleGlobalEnter(
   ctx: Context,
@@ -661,4 +662,22 @@ export function handleGlobalKeyDown(
   cellInput?.focus();
 
   e.stopPropagation();
+}
+
+
+export function autoMoveNextCell(ctx: Context, postion: "down" | "right", inputRef?: HTMLDivElement) {
+  updateCell(
+    ctx,
+    ctx.luckysheetCellUpdate[0],
+    ctx.luckysheetCellUpdate[1],
+    inputRef!
+  );
+  autoSetWidthHeight(ctx, inputRef);
+  moveHighlightCell(ctx, postion, 1, "rangeOfSelect");
+  try {
+    luckysheetUpdateCell(ctx, ctx.luckysheet_select_save?.[0].row_focus!, ctx.luckysheet_select_save?.[0].column_focus!);
+    inputRef?.focus();
+  } catch (error) {
+    console.warn(error);
+  }
 }

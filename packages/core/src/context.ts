@@ -160,7 +160,7 @@ export type Context = {
 
   showGridLines: boolean;
   allowEdit: boolean;
-
+  allowMerge: boolean;
   fontList: any[];
   defaultFontSize: number;
 
@@ -280,7 +280,7 @@ export function defaultContext(): Context {
 
     showGridLines: true,
     allowEdit: true,
-
+    allowMerge: true,
     fontList: [],
     defaultFontSize: 14,
 
@@ -297,10 +297,10 @@ export function defaultContext(): Context {
     // 默认单元格
     defaultCell: {
       bl: 0,
-      ct: { fa: "General", t: "n" },
-      fc: "rgb(51, 51, 51)",
+      ct: { fa: "@", t: "s" },
+      fc: "#000000",
       ff: 0,
-      fs: 11,
+      fs: 14,
       ht: 1,
       it: 0,
       vt: 1,

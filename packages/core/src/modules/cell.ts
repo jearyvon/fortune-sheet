@@ -411,7 +411,7 @@ export function mergeBorder(
       _.isNil(col_rs) ||
       _.isNil(row_rs)
     ) {
-      console.warn("Main merge info is null", mergeMain);
+      console.warn("Main merge info is null", JSON.stringify(mergeMain));
       return null;
     }
 

@@ -15,7 +15,7 @@ import { getSheetIndex } from "../utils";
 import { hasPartMC, isRealNum } from "../modules/validation";
 import { getBorderInfoCompute } from "../modules/border";
 import { expandRowsAndColumns, storeSheetParamALL } from "../modules/sheet";
-import { jfrefreshgrid } from "../modules/refresh";
+import { jfrefreshgrid, syncRowColumnNum } from "../modules/refresh";
 
 function postPasteCut(
   ctx: Context,
@@ -500,6 +500,7 @@ function pasteHandler(ctx: Context, data: any, borderInfo?: any) {
   if (ctx.luckysheet_copy_save?.copyRange) {
 
   }
+  syncRowColumnNum(ctx);
 }
 
 function pasteHandlerOfCutPaste(
@@ -577,6 +578,38 @@ function pasteHandlerOfCutPaste(
     //   );
     // }
     return;
+  }
+
+  if (cfg.rowlen) {
+    let tempNewRow = minh;
+    for (let index = c_r1; index <= c_r2; index++) {
+      if (cfg.rowlen[index]) {
+        if (cfg.rowlen[tempNewRow]) {
+          if (cfg.rowlen[tempNewRow] < cfg.rowlen[index]) {
+            cfg.rowlen[tempNewRow] = cfg.rowlen[index]
+          }
+        } else {
+          cfg.rowlen[tempNewRow] = cfg.rowlen[index]
+        }
+      }
+      tempNewRow++;
+    }
+  }
+  if (cfg.columnlen) {
+    let tempNewcol = minc;
+    for (let index = c_c1; index <= c_c2; index++) {
+      if (cfg.columnlen[index]) {
+        if (cfg.columnlen[tempNewcol]) {
+          if (cfg.columnlen[tempNewcol] < cfg.columnlen[index]) {
+            cfg.columnlen[tempNewcol] = cfg.columnlen[index]
+          }
+        } else {
+          cfg.columnlen[tempNewcol] = cfg.columnlen[index]
+        }
+
+      }
+      tempNewcol++;
+    }
   }
 
   const d = getFlowdata(ctx); // 取数据
@@ -1005,6 +1038,8 @@ function pasteHandlerOfCutPaste(
   } else {
     postPasteCut(ctx, source, target, copyRowlChange);
   }
+
+  syncRowColumnNum(ctx);
 }
 
 function pasteHandlerOfCopyPaste(
@@ -1023,12 +1058,12 @@ function pasteHandlerOfCopyPaste(
     return;
   }
   if (!copyRange) return;
-
   const cfg = ctx.config;
   if (_.isNil(cfg.merge)) {
     cfg.merge = {};
   }
-
+  selectionCache.isPasteAction = false;
+  ctx.luckysheet_selection_range = [];
   // 复制范围
   const copyHasMC = copyRange.HasMC;
   const copyRowlChange = copyRange.RowlChange;
@@ -1050,6 +1085,7 @@ function pasteHandlerOfCopyPaste(
       },
       copySheetIndex
     );
+
     if (copyRange.copyRange.length > 1) {
       if (
         c_r1 === copyRange.copyRange[1].row[0] &&
@@ -1084,7 +1120,6 @@ function pasteHandlerOfCopyPaste(
   }
 
   const copyData = _.cloneDeep(arr);
-
   // 多重选择选择区域 单元格如果有函数 则只取值 不取函数
   if (copyRange.copyRange.length > 1) {
     for (let i = 0; i < copyData.length; i += 1) {
@@ -1136,6 +1171,39 @@ function pasteHandlerOfCopyPaste(
     return;
   }
 
+  if (cfg.rowlen) {
+    let tempNewRow = minh;
+    for (let index = c_r1; index <= c_r2; index++) {
+      if (cfg.rowlen[index]) {
+        if (cfg.rowlen[tempNewRow]) {
+          if (cfg.rowlen[tempNewRow] < cfg.rowlen[index]) {
+            cfg.rowlen[tempNewRow] = cfg.rowlen[index]
+          }
+        } else {
+          cfg.rowlen[tempNewRow] = cfg.rowlen[index]
+        }
+      }
+      tempNewRow++;
+    }
+  }
+  if (cfg.columnlen) {
+    let tempNewcol = minc;
+    for (let index = c_c1; index <= c_c2; index++) {
+      if (cfg.columnlen[index]) {
+        if (cfg.columnlen[tempNewcol]) {
+          if (cfg.columnlen[tempNewcol] < cfg.columnlen[index]) {
+            cfg.columnlen[tempNewcol] = cfg.columnlen[index]
+          }
+        } else {
+          cfg.columnlen[tempNewcol] = cfg.columnlen[index]
+        }
+
+      }
+      tempNewcol++;
+    }
+  }
+
+
   const timesH = (maxh - minh + 1) / copyh;
   const timesC = (maxc - minc + 1) / copyc;
 
@@ -1153,6 +1221,7 @@ function pasteHandlerOfCopyPaste(
   }
 
   const borderInfoCompute = getBorderInfoCompute(ctx, copySheetIndex);
+
   const c_dataVerification =
     _.cloneDeep(
       ctx.luckysheetfile[getSheetIndex(ctx, copySheetIndex)!].dataVerification
@@ -1355,9 +1424,6 @@ function pasteHandlerOfCopyPaste(
   }
   */
 
-  last.row = [minh, maxh];
-  last.column = [minc, maxc];
-
   const file = ctx.luckysheetfile[getSheetIndex(ctx, ctx.currentSheetId)!];
   file.config = cfg;
   file.luckysheet_conditionformat_save = cdformat;
@@ -1381,6 +1447,8 @@ function pasteHandlerOfCopyPaste(
     jfrefreshgrid(ctx, d, ctx.luckysheet_select_save);
     // selectHightlightShow();
   }
+
+  syncRowColumnNum(ctx);
 }
 
 export function handlePaste(ctx: Context, e: ClipboardEvent) {
@@ -1705,6 +1773,7 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
         pasteHandler(ctx, txtdata);
       }
     }
+
   } else if (ctx.luckysheetCellUpdate.length > 0) {
     // 阻止默认粘贴
     e.preventDefault();

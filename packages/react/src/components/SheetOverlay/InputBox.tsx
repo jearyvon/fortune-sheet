@@ -14,6 +14,7 @@ import {
   createRangeHightlight,
   isShowHidenCR,
   israngeseleciton,
+  autoMoveNextCell,
 } from "@fortune-sheet/core";
 import React, {
   useContext,
@@ -30,6 +31,7 @@ import ContentEditable from "./ContentEditable";
 import FormulaSearch from "./FormulaSearch";
 import FormulaHint from "./FormulaHint";
 import usePrevious from "../../hooks/usePrevious";
+import { autoSetWidthHeight } from "packages/core/src/api";
 
 const InputBox: React.FC = () => {
   const { context, setContext, refs } = useContext(WorkbookContext);
@@ -145,23 +147,27 @@ const InputBox: React.FC = () => {
         });
         e.preventDefault();
       } else if (e.key === "Enter" && context.luckysheetCellUpdate.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
         if (e.altKey || e.metaKey) {
           // originally `enterKeyControll`
           document.execCommand("insertHTML", false, "\n "); // 换行符后面的空白符是为了强制让他换行，在下一步的delete中会删掉
           document.execCommand("delete", false);
-          e.stopPropagation();
+          return;
         }
-        // if (
-        //   $("#luckysheet-formula-search-c").is(":visible") &&
-        //   formula.searchFunctionCell != null
-        // ) {
-        //   formula.searchFunctionEnter(
-        //     $("#luckysheet-formula-search-c").find(
-        //       ".luckysheet-formula-search-item-active"
-        //     )
-        //   );
-        //   event.preventDefault();
-        // }
+        setContext((draftCtx) => {
+          // updateCell(
+          //   draftCtx,
+          //   draftCtx.luckysheetCellUpdate[0],
+          //   draftCtx.luckysheetCellUpdate[1],
+          //   refs.cellInput.current!
+          // );
+          // autoSetWidthHeight(draftCtx, inputRef.current);
+          // moveHighlightCell(draftCtx, "down", 1, "rangeOfSelect");
+          // inputRef.current?.focus();
+          autoMoveNextCell(draftCtx, "down", refs.cellInput.current!);
+        });
+        // autoMoveNextCell();
       } else if (e.key === "Tab" && context.luckysheetCellUpdate.length > 0) {
         // if (
         //   $("#luckysheet-formula-search-c").is(":visible") &&
@@ -174,13 +180,7 @@ const InputBox: React.FC = () => {
         //   );
         // } else {
         setContext((draftCtx) => {
-          updateCell(
-            draftCtx,
-            draftCtx.luckysheetCellUpdate[0],
-            draftCtx.luckysheetCellUpdate[1],
-            refs.cellInput.current!
-          );
-          moveHighlightCell(draftCtx, "right", 1, "rangeOfSelect");
+          autoMoveNextCell(draftCtx, "right", refs.cellInput.current!);
         });
         // }
 
@@ -222,7 +222,8 @@ const InputBox: React.FC = () => {
       if (!e) return;
       const kcode = e.keyCode;
       if (!kcode) return;
-
+      // 功能键键码值(keyCode) F1-F2  kcode >= 112 && kcode <= 123
+      //  kcode <= 46
       if (
         !(
           (

@@ -62,10 +62,15 @@ const ContextMenu: React.FC = () => {
     (name: string, i: number) => {
       const selection = context.luckysheet_select_save?.[0];
       let disableMerge = false;
-      if (selection?.column[0] === selection?.column[1] && selection?.row[0] === selection?.row[1]) {
-        disableMerge = true;
-      }
-      if (context.luckysheet_select_save && context.luckysheet_select_save?.length > 1) {
+      const allowMerge = context.allowMerge;
+
+        if (selection?.column[0] === selection?.column[1] && selection?.row[0] === selection?.row[1]) {
+          disableMerge = true;
+        }
+        if (context.luckysheet_select_save && context.luckysheet_select_save?.length > 1) {
+          disableMerge = true;
+        }
+       if (!allowMerge) {
         disableMerge = true;
       }
 

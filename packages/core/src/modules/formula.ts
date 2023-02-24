@@ -119,7 +119,7 @@ export class FormulaCache {
         const flowdata = getFlowdata(context, id);
         const cell =
           context?.formulaCache.execFunctionGlobalData?.[
-            `${cellCoord.row.index}_${cellCoord.column.index}_${id}`
+          `${cellCoord.row.index}_${cellCoord.column.index}_${id}`
           ] || flowdata?.[cellCoord.row.index]?.[cellCoord.column.index];
         const v = that.tryGetCellAsNumber(cell);
         done(v);
@@ -159,7 +159,7 @@ export class FormulaCache {
           for (let col = startCol; col <= endCol; col += 1) {
             const cell =
               context?.formulaCache.execFunctionGlobalData?.[
-                `${row}_${col}_${id}`
+              `${row}_${col}_${id}`
               ] || flowdata?.[row]?.[col];
             const v = that.tryGetCellAsNumber(cell);
             colFragment.push(v);
@@ -447,7 +447,7 @@ function checkSpecialFunctionRange(
         // this.isFunctionRangeSaveChange(str, r, c, index, dynamicArray_compute);
         // console.log(function_str, str, this.isFunctionRangeSave,r,c);
       }
-    } catch {}
+    } catch { }
   }
 }
 
@@ -501,9 +501,8 @@ function isFunctionRange(
           const funcArray = str.split(":");
           function_str += `luckysheet_getSpecialReference(true,'${_.trim(
             funcArray[0]
-          ).replace(/'/g, "\\'")}', luckysheet_function.${
-            funcArray[1]
-          }.f(#lucky#`;
+          ).replace(/'/g, "\\'")}', luckysheet_function.${funcArray[1]
+            }.f(#lucky#`;
         } else {
           function_str += `luckysheet_function.${str}.f(`;
         }
@@ -1305,7 +1304,7 @@ export function execFunctionGroup(
     [
       [
         ctx.formulaCache.execFunctionGlobalData[
-          `${origin_r}_${origin_c}_${id}`
+        `${origin_r}_${origin_c}_${id}`
         ],
       ],
     ] = cellCache;
@@ -2198,7 +2197,7 @@ function helpFunctionExe(
       if (
         $cur.classList.contains("luckysheet-formula-text-func") ||
         _.trim($cur.textContent || "").toUpperCase() in
-          ctx.formulaCache.functionlistMap
+        ctx.formulaCache.functionlistMap
       ) {
         funcName = $cur.textContent;
         paramindex = null;
@@ -2537,6 +2536,8 @@ export function handleFormulaInput(
   // }
   let value1: string;
   const value1txt = preText ?? $editor.innerText;
+
+  // let value = $editor.innerText.replace(/\\n\\n/ig, "\n");
   let value = $editor.innerText;
   value = escapeScriptTag(value);
   value = escapeHTML(value);
@@ -2765,13 +2766,11 @@ function functionStrChange_range(
       return `${prefix + $row0 + (r1 + 1)}:${$row1}${r2 + 1}`;
     }
     if (Number.isNaN(r1) && Number.isNaN(r2)) {
-      return `${
-        prefix + $col0 + indexToColumnChar(c1)
-      }:${$col1}${indexToColumnChar(c2)}`;
+      return `${prefix + $col0 + indexToColumnChar(c1)
+        }:${$col1}${indexToColumnChar(c2)}`;
     }
-    return `${
-      prefix + $col0 + indexToColumnChar(c1) + $row0 + (r1 + 1)
-    }:${$col1}${indexToColumnChar(c2)}${$row1}${r2 + 1}`;
+    return `${prefix + $col0 + indexToColumnChar(c1) + $row0 + (r1 + 1)
+      }:${$col1}${indexToColumnChar(c2)}${$row1}${r2 + 1}`;
   }
   if (type === "add") {
     if (rc === "row") {
@@ -2828,13 +2827,11 @@ function functionStrChange_range(
       return `${prefix + $row0 + (r1 + 1)}:${$row1}${r2 + 1}`;
     }
     if (Number.isNaN(r1) && Number.isNaN(r2)) {
-      return `${
-        prefix + $col0 + indexToColumnChar(c1)
-      }:${$col1}${indexToColumnChar(c2)}`;
+      return `${prefix + $col0 + indexToColumnChar(c1)
+        }:${$col1}${indexToColumnChar(c2)}`;
     }
-    return `${
-      prefix + $col0 + indexToColumnChar(c1) + $row0 + (r1 + 1)
-    }:${$col1}${indexToColumnChar(c2)}${$row1}${r2 + 1}`;
+    return `${prefix + $col0 + indexToColumnChar(c1) + $row0 + (r1 + 1)
+      }:${$col1}${indexToColumnChar(c2)}${$row1}${r2 + 1}`;
   }
   return "";
 }
@@ -3741,13 +3738,11 @@ function updateparam(orient: string, txt: string, step: number) {
     return `${prefix + $row0 + row[0]}:${$row1}${row[1]}`;
   }
   if (Number.isNaN(row[0]) && Number.isNaN(row[1])) {
-    return `${
-      prefix + $col0 + indexToColumnChar(col[0])
-    }:${$col1}${indexToColumnChar(col[1])}`;
+    return `${prefix + $col0 + indexToColumnChar(col[0])
+      }:${$col1}${indexToColumnChar(col[1])}`;
   }
-  return `${
-    prefix + $col0 + indexToColumnChar(col[0]) + $row0 + row[0]
-  }:${$col1}${indexToColumnChar(col[1])}${$row1}${row[1]}`;
+  return `${prefix + $col0 + indexToColumnChar(col[0]) + $row0 + row[0]
+    }:${$col1}${indexToColumnChar(col[1])}${$row1}${row[1]}`;
 }
 
 function downparam(txt: string, step: number) {

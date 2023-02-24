@@ -127,6 +127,7 @@ export type Settings = {
   row?: number;
   addRows?: number;
   allowEdit?: boolean;
+  allowMerge?: boolean;
   showToolbar?: boolean;
   showFormulaBar?: boolean;
   showSheetTabs?: boolean;
@@ -160,6 +161,7 @@ export const defaultSettings: Required<Settings> = {
   config: {}, // 表格行高、列宽、合并单元格、公式等设置
   devicePixelRatio: (global || window).devicePixelRatio, // 设备比例，比例越大表格分标率越高
   allowEdit: true, // 是否允许前台编辑
+  allowMerge: true,
   lang: null, // language
   forceCalculation: false, // 强制刷新公式，公式较多会有性能问题，慎用
   rowHeaderWidth: 46,

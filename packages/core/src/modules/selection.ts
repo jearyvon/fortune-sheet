@@ -657,13 +657,21 @@ export function moveHighlightCell(
     if (postion === "down") {
       curR += index;
       moveX = curR;
+      if (curR >= datarowlen) {
+        curR = 0;
+        curC++;
+      }
     } else if (postion === "right") {
       curC += index;
       moveY = curC;
+      if (curC >= datacolumnlen) {
+        curC = 0;
+        curR++;
+      }
     }
 
     if (curR >= datarowlen) {
-      curR = datarowlen - 1;
+      curR = 0;
       moveX = curR;
     }
 
@@ -673,7 +681,7 @@ export function moveHighlightCell(
     }
 
     if (curC >= datacolumnlen) {
-      curC = datacolumnlen - 1;
+      curC = 0;
       moveY = curC;
     }
 

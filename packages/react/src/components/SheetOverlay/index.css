@@ -910,5 +910,7 @@
 }
 #luckysheet-rich-text-editor{
   font-size: 14px;
-  font-family: "Times New Roman",-apple-system, "PingFang SC", "Hiragino Sans GB", Arial, "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", Arial, "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  -webkit-user-select:auto;
+  user-select:auto;
 }

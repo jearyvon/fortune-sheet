@@ -1291,6 +1291,7 @@ export function handleCellAreaDoubleClick(
     ctx.formulaCache.rangedrag_row_start ||
     israngeseleciton(ctx)
   ) {
+    console.log("ccc")
     return;
   }
   // 禁止前台编辑(只可 框选单元格、滚动查看表格)
@@ -1686,8 +1687,8 @@ function mouseRender(
   ) {
     const left = ctx.scrollLeft;
     const top = ctx.scrollTop;
-    const x = e.pageX - rect.left - ctx.mainBoxRect.left;
-    const y = e.pageY - rect.top - ctx.mainBoxRect.left;
+    const x = e.pageX - rect.left - ctx.rowHeaderWidth * ctx.zoomRatio;
+    const y = e.pageY - rect.top - ctx.columnHeaderHeight * ctx.zoomRatio;
     const winH = rect.height - ctx.columnHeaderHeight * ctx.zoomRatio;
     const winW = rect.width - ctx.rowHeaderWidth * ctx.zoomRatio;
 
@@ -1763,7 +1764,8 @@ function mouseRender(
 
           (changeSizeLine as HTMLDivElement).style.top = `0px`;
           (changeSizeLine as HTMLDivElement).style.width = "0px";
-          (changeSizeLine as HTMLDivElement).style.height = `${rect.height}px`;
+          const last = ctx.visibledatarow[ctx.visibledatarow.length - 1];
+          (changeSizeLine as HTMLDivElement).style.height = `${last > rect.height ? rect.height : last}px`;
         }
         return;
       } else if (select?.row_select) {
@@ -1774,7 +1776,8 @@ function mouseRender(
           (changeSizeLine as HTMLDivElement).style.top = `${row - 1}px`;
         }
         (changeSizeLine as HTMLDivElement).style.left = `0px`;
-        (changeSizeLine as HTMLDivElement).style.width = `${rect.width}px`;
+        const last = ctx.visibledatacolumn[ctx.visibledatacolumn.length - 1];
+        (changeSizeLine as HTMLDivElement).style.width = `${last > rect.width ? rect.width : last}px`;
         (changeSizeLine as HTMLDivElement).style.height = '0px';
         return;
       }
@@ -5223,4 +5226,8 @@ export function handleRowSizeHandleMouseDown(
   // $("#luckysheet-cols-h-hover").hide();
   // $("#luckysheet-cols-menu-btn").hide();
   e.stopPropagation();
+}
+
+export function freeSelect(ctx: Context) {
+
 }
