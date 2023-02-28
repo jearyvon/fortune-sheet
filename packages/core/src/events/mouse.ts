@@ -1771,10 +1771,10 @@ function mouseRender(
             (changeSizeLine as HTMLDivElement).style.left = `${col - 1}px`;
           }
 
-          (changeSizeLine as HTMLDivElement).style.top = `0px`;
+          (changeSizeLine as HTMLDivElement).style.top = `-1px`;
           (changeSizeLine as HTMLDivElement).style.width = "0px";
           const last = ctx.visibledatarow[ctx.visibledatarow.length - 1];
-          (changeSizeLine as HTMLDivElement).style.height = `${last > rect.height ? rect.height : last}px`;
+          (changeSizeLine as HTMLDivElement).style.height = `${last > rect.height ? rect.height - 3 : last - 3}px`;
         }
         return;
       } else if (select?.row_select) {
@@ -1786,7 +1786,7 @@ function mouseRender(
         }
         (changeSizeLine as HTMLDivElement).style.left = `0px`;
         const last = ctx.visibledatacolumn[ctx.visibledatacolumn.length - 1];
-        (changeSizeLine as HTMLDivElement).style.width = `${last > rect.width ? rect.width : last}px`;
+        (changeSizeLine as HTMLDivElement).style.width = `${last > rect.width ? rect.width - 3 : last - 3}px`;
         (changeSizeLine as HTMLDivElement).style.height = '0px';
         return;
       }

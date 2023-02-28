@@ -17,7 +17,8 @@ export default class clipboard {
       ele.focus({ preventScroll: true });
       document.execCommand("selectAll");
       document.execCommand("copy");
-      ele.style.display = "none";
+      ele.style.opacity = "0";
+      // ele.style.display = "none";
     } catch (e) {
       console.error(e);
     }

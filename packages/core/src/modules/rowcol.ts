@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Context } from "../context";
-import { Cell, Sheet } from "../types";
+import { Cell, CellMatrix, Sheet, SheetConfig } from "../types";
 import { getSheetIndex } from "../utils";
 import { getcellFormula } from "./cell";
 import { functionStrChange } from "./formula";
@@ -2088,6 +2088,35 @@ export function hideCRCount(ctx: Context, type: string): number {
   return count;
 }
 
+
+
+function restMergeConfig(d: CellMatrix): SheetConfig['merge'] {
+  // 修改合并单元格相关的
+  const mergeData: Record<string, any> = {};
+  const oldMergeMap: Record<string, { r: number, c: number }> = {};
+  for (let rIdx = 0; rIdx < d.length; rIdx++) {
+    const cols = d[rIdx];
+    for (let cIdx = 0; cIdx < cols.length; cIdx++) {
+      const cell = cols[cIdx];
+      if (cell && cell.mc) {
+        // 新的key
+        const oldKey = `${cell.mc.r}_${cell.mc.c}`;
+        if (oldMergeMap[oldKey]) {
+          cell.mc = oldMergeMap[oldKey];
+        } else {
+          const key = `${rIdx}_${cIdx}`;
+          if (cell.mc.rs && cell.mc.cs) {
+            mergeData[key] = { r: rIdx, c: cIdx, rs: cell.mc.rs, cs: cell.mc.cs };
+            cell.mc = mergeData[key];
+            oldMergeMap[oldKey] = { r: rIdx, c: cIdx };
+          }
+        }
+      }
+    }
+  }
+
+  return mergeData;
+}
 //交换行列
 export function exchangeRowOrColRank(ctx: Context, type: string, from: number, to: number) {
   const curOrder = getSheetIndex(ctx, ctx.currentSheetId);
@@ -2096,6 +2125,9 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
   if (!file) return;
   const d = file.data;
   if (!d) return;
+  // 向前移动
+  const goAhead = from > to;
+
   // const cfg = file.config;
   function checkMerge(data: (Cell | null)[]): boolean {
     if (!data) return false;
@@ -2107,10 +2139,12 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     }
     return false;
   }
+  // function isInMergeArea(cells,  
   if (type === 'row') {
     const tempFromRow = d[from];
     const toTempRow = d[to];
-    if (checkMerge(tempFromRow) || checkMerge(toTempRow)) {
+    const checkToRange = goAhead ? checkMerge(d[to - 1]) : checkMerge(d[to + 1])
+    if (checkMerge(tempFromRow) || (checkMerge(toTempRow) && checkToRange)) {
       ctx.luckysheet_select_status = false;
       ctx.luckysheet_scroll_status = false;
       throw new Error("移动项不能包含合并单元格")
@@ -2121,7 +2155,6 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     delete tempRowLen[from];
     if (from < to) {
       // 往后移
-
       for (let index = from; index < to; index++) {
         if (tempRowLen[index + 1]) {
           tempRowLen[index] = tempRowLen[index + 1];
@@ -2145,35 +2178,13 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     if (fromRowLenCopy) {
       tempRowLen[to] = fromRowLenCopy;
     }
-    if (file.config)
-      file.config['rowlen'] = tempRowLen;
-    // 修改合并单元格相关的
-    const mergeData: Record<string, any> = {};
-    const oldMergeMap: Record<string, { r: number, c: number }> = {};
-    for (let rIdx = 0; rIdx < d.length; rIdx++) {
-      const cols = d[rIdx];
-      for (let cIdx = 0; cIdx < cols.length; cIdx++) {
-        const cell = cols[cIdx];
-        if (cell && cell.mc) {
-          // 新的key
-          const oldKey = `${cell.mc.r}_${cell.mc.c}`;
-          if (oldMergeMap[oldKey]) {
-            cell.mc = oldMergeMap[oldKey];
-          } else {
-            const key = `${rIdx}_${cIdx}`;
-            if (cell.mc.rs && cell.mc.cs) {
-              mergeData[key] = { r: rIdx, c: cIdx, rs: cell.mc.rs, cs: cell.mc.cs };
-              cell.mc = mergeData[key];
-              oldMergeMap[oldKey] = { r: rIdx, c: cIdx };
-            }
-
-          }
-        }
-      }
+    if (!file.config) {
+      file.config = {};
     }
-    if (file.config) {
-      file.config.merge = mergeData;
-    }
+    file.config['rowlen'] = tempRowLen;
+    //  处理合并单元格
+    const mergeData = restMergeConfig(d);
+    file.config.merge = mergeData;
     // 修改选择范围
     const select = ctx.luckysheet_select_save;
     if (select?.[0]) {
@@ -2182,19 +2193,29 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     }
 
   } else {
-
+    // 移动列
     const tempColLen = file.config?.columnlen ?? {};
     let fromColLenCopy = tempColLen[from];
     delete tempColLen[from];
+    console.log("from%s-to%s", from, to);
     for (let rowIdx = 0; rowIdx < d.length; rowIdx++) {
       const rows = d[rowIdx];
-      if ((rows[from] && rows[from]?.mc) || rows[to] && rows[to]?.mc) {
+      if ((rows[from] && rows[from]?.mc)) {
         ctx.luckysheet_select_status = false;
         ctx.luckysheet_scroll_status = false;
         throw new Error("移动项不能包含合并单元格")
       }
+      if (rows[to] && rows[to]?.mc) {
+        const checkIdx = goAhead ? to - 1 : to + 1;
+        if (rows[checkIdx] && rows[checkIdx]?.mc) {
+          ctx.luckysheet_select_status = false;
+          ctx.luckysheet_scroll_status = false;
+          throw new Error("移动项不能包含合并单元格")
+        }
+      }
+      // todo:: 合并后的表格合并数据重处理， 行检查代码
     }
-    if (from < to) {
+    if (!goAhead) {
       for (let rIdx = 0; rIdx < d.length; rIdx++) {
         const rows = d[rIdx];
         const tempFrom = rows[from];
@@ -2225,8 +2246,13 @@ export function exchangeRowOrColRank(ctx: Context, type: string, from: number, t
     if (fromColLenCopy) {
       tempColLen[to] = fromColLenCopy;
     }
-    if (file.config)
-      file.config['columnlen'] = tempColLen;
+    if (!file.config) {
+      file.config = {};
+    }
+    //  处理合并单元格
+    const mergeData = restMergeConfig(d);
+    file.config.merge = mergeData;
+    file.config['columnlen'] = tempColLen;
     // 修改选择范围
     const select = ctx.luckysheet_select_save;
     if (select?.[0]) {

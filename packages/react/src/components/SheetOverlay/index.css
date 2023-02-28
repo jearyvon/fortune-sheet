@@ -907,6 +907,7 @@
   height: 0px;
   cursor:grab;
   z-index: 999;
+  user-select: none;
 }
 #luckysheet-rich-text-editor{
   font-size: 14px;
