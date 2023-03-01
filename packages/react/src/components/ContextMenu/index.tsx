@@ -25,7 +25,8 @@ import { useDialog } from "../../hooks/useDialog";
 import Divider from "./Divider";
 import "./index.css";
 import Menu from "./Menu";
-
+const platformCtrlKey = window.navigator.userAgent.includes('Macintosh')?"⌘":"Ctrl"
+const commandKeyIcon = window.navigator.userAgent.includes('Macintosh')?"command-icon":"command-icon command-icon-win"
 const ContextMenu: React.FC = () => {
   const { showDialog } = useDialog();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +35,7 @@ const ContextMenu: React.FC = () => {
   const { contextMenu } = context;
   const { showAlert } = useAlert();
   const { rightclick, drag, generalDialog, info } = locale(context);
-
+  
   const undoList = refs.globalCache.undoList;
 
   const getStatus = (isRow=true) => {
@@ -96,7 +97,7 @@ const ContextMenu: React.FC = () => {
           >
             {rightclick.copy}
             <span className="shortcut-icon">
-            <span className="command-icon">⌘</span> + C
+              <span className={commandKeyIcon}>{ platformCtrlKey}</span> + C
             </span>
           </Menu>
         );
@@ -134,7 +135,7 @@ const ContextMenu: React.FC = () => {
           >
             {rightclick.paste}
             <span className="shortcut-icon">
-            <span className="command-icon">⌘</span> + V
+              <span className={commandKeyIcon}>{ platformCtrlKey}</span> + V
             </span>
           </Menu>
         );
@@ -152,7 +153,7 @@ const ContextMenu: React.FC = () => {
           >
             {rightclick.cut}
             <span className="shortcut-icon">
-            <span className="command-icon">⌘</span> + X
+              <span className={commandKeyIcon}>{ platformCtrlKey}</span> + X
             </span>
           </Menu>
         );
@@ -171,7 +172,7 @@ const ContextMenu: React.FC = () => {
           >
             {rightclick.undo}
             <span className="shortcut-icon">
-            <span className="command-icon">⌘</span> + Z
+            <span className={commandKeyIcon}>{ platformCtrlKey}</span> + Z
             </span>
           </Menu>
         );
