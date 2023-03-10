@@ -1479,9 +1479,13 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
     //   return;
     // }
     if (!clipboardData) return;
-
+    let isTablePaste = false;
     let txtdata = clipboardData.getData("text/html") ||
       clipboardData.getData("text/plain");
+    if (txtdata.startsWith('<html')) {
+      isTablePaste = true;
+      txtdata = clipboardData.getData("text/plain");
+    }
     // if (!txtdata) return;
     // let txtdata = clipboardData.getData("text/html");
     // 如果标示是qksheet复制的内容，判断剪贴板内容是否是当前页面复制的内容
@@ -1764,12 +1768,12 @@ export function handlePaste(ctx: Context, e: ClipboardEvent) {
         pasteHandler(ctx, data, borderInfo);
         // $("#fortune-copy-content").empty();
         ele.remove();
-      }
-      // 复制的是图片
-      else if (
+      } else if (
         clipboardData.files.length === 1 &&
-        clipboardData.files[0].type.indexOf("image") > -1
+        clipboardData.files[0].type.indexOf("image") > -1 &&
+        !isTablePaste
       ) {
+        // 复制的是图片
         //   imageCtrl.insertImg(clipboardData.files[0]);
       } else {
         txtdata = clipboardData.getData("text/plain");

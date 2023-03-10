@@ -60,8 +60,8 @@ export const GetCellValue: ComponentStory<typeof Workbook> = () => {
   return (
     <ApiExecContainer
       onRun={() => {
-        // return ref.current?.getCellValue(0, 0);
-        ref.current?.freeTable();
+        return ref.current?.getCellValue(0, 0);
+        // ref.current?.freeTable();
       }}
     >
       <Workbook ref={ref} data={data} onChange={onChange} />

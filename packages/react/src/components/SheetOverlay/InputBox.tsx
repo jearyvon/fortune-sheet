@@ -10,7 +10,6 @@ import {
   moveHighlightCell,
   escapeScriptTag,
   valueShowEs,
-  updateCell,
   createRangeHightlight,
   isShowHidenCR,
   israngeseleciton,
@@ -135,6 +134,7 @@ const InputBox: React.FC = () => {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       lastKeyDownEventRef.current = new KeyboardEvent(e.type, e.nativeEvent);
       preText.current = inputRef.current!.innerText;
+      console.log('input keydown');
       // if (
       //   $("#luckysheet-modal-dialog-mask").is(":visible") ||
       //   $(event.target).hasClass("luckysheet-mousedown-cancel") ||
@@ -142,13 +142,14 @@ const InputBox: React.FC = () => {
       // ) {
       //   return;
       // }
-      e.stopPropagation();
+     
       if (e.key === "Escape" && context.luckysheetCellUpdate.length > 0) {
         setContext((draftCtx) => {
           cancelNormalSelected(draftCtx);
           moveHighlightCell(draftCtx, "down", 0, "rangeOfSelect");
         });
         e.preventDefault();
+        e.stopPropagation();
       } else if (e.key === "Enter" && context.luckysheetCellUpdate.length > 0) {
         e.preventDefault();
         e.stopPropagation();
@@ -311,24 +312,28 @@ const InputBox: React.FC = () => {
   ) {
     edit = false;
   }
-
+  const luckysheetCellUpdateEmpty = _.isEmpty(context.luckysheetCellUpdate)
   return (
     <div
       className="luckysheet-input-box"
       style={
-        firstSelection && !_.isEmpty(context.luckysheetCellUpdate)
+        firstSelection
           ? {
               left: firstSelection.left,
-              top: firstSelection.top,
-              display: "block",
+            top: firstSelection.top,
+            zIndex: luckysheetCellUpdateEmpty ? -99 : 19,
+              cursor:luckysheetCellUpdateEmpty?"default":"text",
             }
-          : { left: -10000, top: -10000, display: "block" }
+          : { left: -10000, top: -10000, display: "none" }
       }
       onMouseDown={(e) => {
         e.stopPropagation();
         e.preventDefault();
       }}
-      onMouseUp={(e) => e.stopPropagation()}
+      onMouseUp={(e) => {
+        // e.stopPropagation();
+         e.preventDefault();
+      }}
     >
       <div
         className="luckysheet-input-box-inner"

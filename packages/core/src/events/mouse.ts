@@ -1267,6 +1267,10 @@ export function handleCellAreaMouseDown(
     ctx.luckysheet_select_save
   );
 
+  setTimeout(() => {
+    cellInput?.focus();
+  }, 1);
+
   if (ctx.hooks.afterCellMouseDown) {
     setTimeout(() => {
       ctx.hooks.afterCellMouseDown?.(flowdata[row_index]?.[col_index], {

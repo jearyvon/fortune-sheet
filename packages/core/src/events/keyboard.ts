@@ -141,6 +141,7 @@ export function handleWithCtrlOrMetaKey(
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
       // Ctrl + Shift + 方向键  调整选区
       handleBatchSelectionWithArrowKey(ctx, e);
+
     } else if (_.includes([";", '"', ":", "'"], e.key)) {
       const last =
         ctx.luckysheet_select_save?.[ctx.luckysheet_select_save.length - 1];
@@ -410,6 +411,8 @@ function handleShiftWithArrowKey(ctx: Context, e: KeyboardEvent) {
 }
 
 export function handleArrowKey(ctx: Context, e: KeyboardEvent) {
+
+
   if (
     ctx.luckysheetCellUpdate.length > 0 ||
     ctx.luckysheet_cell_selected_move ||
@@ -667,9 +670,9 @@ export function handleGlobalKeyDown(
       }
     }
   }
-
-  cellInput?.focus();
-
+  if (document.activeElement !== cellInput) {
+    cellInput?.focus();
+  }
   e.stopPropagation();
 }
 
