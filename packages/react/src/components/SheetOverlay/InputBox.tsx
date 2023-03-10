@@ -134,14 +134,6 @@ const InputBox: React.FC = () => {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       lastKeyDownEventRef.current = new KeyboardEvent(e.type, e.nativeEvent);
       preText.current = inputRef.current!.innerText;
-      console.log('input keydown');
-      // if (
-      //   $("#luckysheet-modal-dialog-mask").is(":visible") ||
-      //   $(event.target).hasClass("luckysheet-mousedown-cancel") ||
-      //   $(event.target).hasClass("formulaInputFocus")
-      // ) {
-      //   return;
-      // }
      
       if (e.key === "Escape" && context.luckysheetCellUpdate.length > 0) {
         setContext((draftCtx) => {
